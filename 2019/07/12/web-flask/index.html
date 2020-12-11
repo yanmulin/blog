@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <!-- Minima -->
+  <!-- Hexo theme created by @adisaktijrs -->
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+
+  
+  <title>《Flask Web》Review</title>
+  
+  <link rel="canonical" href="https://yanmulin.me/2019/07/12/web-flask/">
+  
+  <meta name="description" content="概述Flask是一个轻量且灵活的Python Web框架。《Flask Web开发》介绍了用Flask开发Web的基本实践，讲解非常清晰流畅，很适合作为入门的读物。本文作为该书的提纲，并提供示例代码，为以后开发提供快速参考的资料。 一个最简单的Flask App如下： from flask impo">
+  
+  
+  <meta name="author" content="yanmulin">
+  <meta property="og:site_name" content="颜木林的流水账" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="《Flask Web》Review" />
+  
+  <meta property="og:description" content="概述Flask是一个轻量且灵活的Python Web框架。《Flask Web开发》介绍了用Flask开发Web的基本实践，讲解非常清晰流畅，很适合作为入门的读物。本文作为该书的提纲，并提供示例代码，为以后开发提供快速参考的资料。 一个最简单的Flask App如下： from flask impo">
+  
+  <meta property="og:url" content="https://yanmulin.me/2019/07/12/web-flask/" />
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Preload fonts
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="preload" href="../fonts/dm-serif-display-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../fonts/inter-v2-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+<link rel="stylesheet" href="/css/normalize.css">
+
+  
+<link rel="stylesheet" href="/css/skeleton.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+<link rel="stylesheet" href="/css/prism-dark.css">
+
+  
+<link rel="stylesheet" href="/css/prism-line-numbers.css">
+
+  <!-- User css -->
+  
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+
+  <!-- Custom Theme Color Style
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <style>
+  a:not(.icon) {
+    text-decoration-color: #0FA0CE;
+    background-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 50%,
+      #0FA0CE 50%
+    );
+  }
+  .category-link {]
+    text-decoration-color: transparent;
+    border-color: #0FA0CE;
+  }
+  blockquote {
+    border-left: 8px solid #0FA0CE;
+  }
+  .nanobar .bar {
+    background: #0FA0CE;
+  }
+  .post-body h3::before {
+    color: #0FA0CE;
+  } 
+  .button.button-primary:hover,
+  button.button-primary:hover,
+  input[type="submit"].button-primary:hover,
+  input[type="reset"].button-primary:hover,
+  input[type="button"].button-primary:hover,
+  .button.button-primary:focus,
+  button.button-primary:focus,
+  input[type="submit"].button-primary:focus,
+  input[type="reset"].button-primary:focus,
+  input[type="button"].button-primary:focus {
+    background-color: #0FA0CE;
+    border-color: #0FA0CE;
+  }
+  input[type="email"]:focus,
+  input[type="number"]:focus,
+  input[type="search"]:focus,
+  input[type="text"]:focus,
+  input[type="tel"]:focus,
+  input[type="url"]:focus,
+  input[type="password"]:focus,
+  textarea:focus,
+  select:focus {
+    border: 1px solid #0FA0CE;
+  }
+</style>
+
+  <!-- Google Analytics (With Privacy Settings On)
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body class="darkmode">
+  <div class="container">
+    <div class="row">
+      <div>
+        <div class="row">
+  
+
+  <div class="twelve columns">
+    <div class="row" style="margin-bottom: 2.6rem">
+        
+          
+            
+              <a href="/archives" class="mr u-pull-right">Notes</a>
+            
+          
+            
+              <a href="/About" class="mr u-pull-right">About</a>
+            
+          
+          <a href="/" class="u-pull-right mr">Home</a>
+        
+      </div>
+  </div>
+
+  
+    <h2>《Flask Web》Review</h2>
+    <p class="post-info">Jul 12, 2019 </p>
+  
+</div>
+
+        <div class="trans">
+          <div class="post-body">
+  
+  <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>Flask是一个轻量且灵活的Python Web框架。<a target="_blank" rel="noopener" href="https://book.douban.com/subject/26274202/">《Flask Web开发》</a>介绍了用Flask开发Web的基本实践，讲解非常清晰流畅，很适合作为入门的读物。本文作为该书的提纲，并提供示例代码，为以后开发提供快速参考的资料。</p>
+<p>一个最简单的Flask App如下：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> flask <span class="token keyword">import</span> Flask
+app <span class="token operator">=</span> Flask<span class="token punctuation">(</span>__name__<span class="token punctuation">)</span>
+
+<span class="token decorator annotation punctuation">@app<span class="token punctuation">.</span>route</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
+<span class="token keyword">def</span> <span class="token function">hello</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> <span class="token string">"Hello World!"</span>
+    
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">'__main__'</span><span class="token punctuation">:</span>
+    app<span class="token punctuation">.</span>run<span class="token punctuation">(</span>debug<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h3><h4 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h4><ul>
+<li>视图函数</li>
+<li>路由<ol>
+<li><code>@app.route(&quot;/index&quot;)</code></li>
+<li>静态路由 <code>/static/filename</code></li>
+</ol>
+</li>
+<li>上下文全局变量<ul>
+<li>程序上下文：current_app(当前激活的程序实例）, g（临时存储的全局变量，每次请求重置）</li>
+<li>请求上下文：request, session（用于存放Cookie等）</li>
+</ul>
+</li>
+<li>请求钩子<ul>
+<li><code>before_first_request</code></li>
+<li><code>before_request</code></li>
+<li><code>teardown_request</code></li>
+</ul>
+</li>
+<li>响应<ul>
+<li>视图函数的返回值<code>data[, status_code[, headers]]</code></li>
+<li><code>make_response()</code></li>
+<li><code>redirect()</code></li>
+<li><code>abort(error_code)</code></li>
+</ul>
+</li>
+<li>自定义错误处理函数：不进入视图函数，返回定制的模板<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token decorator annotation punctuation">@app<span class="token punctuation">.</span>error_handler</span><span class="token punctuation">(</span><span class="token number">404</span><span class="token punctuation">)</span>
+<span class="token keyword">def</span> <span class="token function">page_not_found</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token decorator annotation punctuation">@app<span class="token punctuation">.</span>error_handler</span><span class="token punctuation">(</span><span class="token number">500</span><span class="token punctuation">)</span>
+<span class="token keyword">def</span> internal_server_error<span class="token punctuation">:</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></li>
+<li><code>url_for(&#39;index&#39;, page=2)</code>返回动态的地址<code>/index?page=2</code></li>
+<li><code>url_for(&#39;static&#39;, filename=...)</code>返回静态文件地址</li>
+<li>flash消息<ul>
+<li>flash()</li>
+<li>渲染flash消息<code>get_flashed_messages()</code></li>
+</ul>
+</li>
+<li>config.py文件结构</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">Config</span><span class="token punctuation">:</span>
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token comment"># 通用配置</span>
+<span class="token keyword">class</span> <span class="token class-name">DevelopmentConfig</span><span class="token punctuation">(</span>Config<span class="token punctuation">)</span><span class="token punctuation">:</span>
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token comment"># 开发环境配置</span>
+<span class="token keyword">class</span> <span class="token class-name">TestingConfig</span><span class="token punctuation">(</span>Config<span class="token punctuation">)</span><span class="token punctuation">:</span>
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token comment"># 测试环境配置</span>
+<span class="token keyword">class</span> <span class="token class-name">ProductionConfig</span><span class="token punctuation">(</span>Config<span class="token punctuation">)</span><span class="token punctuation">:</span>
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token comment"># 生产环境配置</span>
+config <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+<span class="token string">"development"</span><span class="token punctuation">:</span> DevelopmentConfig<span class="token punctuation">,</span>
+<span class="token string">"testing"</span><span class="token punctuation">:</span> TestingConfig<span class="token punctuation">,</span>
+<span class="token string">"production"</span><span class="token punctuation">:</span> ProductionConfig<span class="token punctuation">,</span>
+<span class="token string">"default"</span><span class="token punctuation">:</span> DevelopmentConfig
+<span class="token punctuation">&#125;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ul>
+<li>配置 <code>app.config.from_object(config[config_name])</code></li>
+<li>app工厂函数（一般在app/<strong>init</strong>.py文件中）</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">create_app</span><span class="token punctuation">(</span>config_name<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    app <span class="token operator">=</span> Flask<span class="token punctuation">(</span>__name__<span class="token punctuation">)</span>
+    app<span class="token punctuation">.</span>config<span class="token punctuation">.</span>from_object<span class="token punctuation">(</span>config<span class="token punctuation">[</span>config_name<span class="token punctuation">]</span><span class="token punctuation">)</span>
+    
+    <span class="token comment"># 初始化flask扩展    </span>
+    
+    <span class="token comment"># 设置路由和错误处理函数</span>
+    
+    <span class="token keyword">return</span> app<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ul>
+<li>蓝图<br>main蓝图，在app/main/<strong>init</strong>.py中</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> flask <span class="token keyword">import</span> Blueprint
+main <span class="token operator">=</span> Blueprint<span class="token punctuation">(</span><span class="token string">"main"</span><span class="token punctuation">,</span> __name__<span class="token punctuation">)</span>
+<span class="token keyword">from</span> <span class="token punctuation">.</span> imort views<span class="token punctuation">,</span> errors<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>注：Blueprint构造函数第一个参数是包名/蓝图名，第二个参数一般用<strong>name</strong></p>
+<p>蓝图的路由</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token decorator annotation punctuation">@main<span class="token punctuation">.</span>route</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
+<span class="token decorator annotation punctuation">@main<span class="token punctuation">.</span>error_handler</span><span class="token punctuation">(</span><span class="token number">404</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>注册蓝图（在app工厂函数中）</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> main <span class="token keyword">import</span> main <span class="token keyword">as</span> main_blueprint
+app<span class="token punctuation">.</span>register_blueprint<span class="token punctuation">(</span>main_blueprint<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<h4 id="Flask-Script-支持命令"><a href="#Flask-Script-支持命令" class="headerlink" title="Flask-Script 支持命令"></a>Flask-Script 支持命令</h4><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> flask_script <span class="token keyword">import</span> Manager
+manager <span class="token operator">=</span> Manager<span class="token punctuation">(</span>app<span class="token punctuation">)</span>
+<span class="token comment"># ...</span>
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">'__main__'</span><span class="token punctuation">:</span>
+    manager<span class="token punctuation">.</span>run<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ul>
+<li>默认命令: <code>runserver</code>, <code>shell</code></li>
+<li>为<code>shell</code>命令提供一个上下文<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">make_shell_context</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> <span class="token builtin">dict</span><span class="token punctuation">(</span>app<span class="token operator">=</span>app<span class="token punctuation">,</span> db<span class="token operator">=</span>db<span class="token punctuation">)</span>
+manager<span class="token punctuation">.</span>add_command<span class="token punctuation">(</span><span class="token string">"shell"</span><span class="token punctuation">,</span> Shell<span class="token punctuation">(</span>make_context<span class="token operator">=</span>make_shell_context<span class="token punctuation">)</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+</li>
+</ul>
+<h4 id="Jinja2和Flask-Bootstrap渲染HTML"><a href="#Jinja2和Flask-Bootstrap渲染HTML" class="headerlink" title="Jinja2和Flask-Bootstrap渲染HTML"></a>Jinja2和Flask-Bootstrap渲染HTML</h4><ul>
+<li>实践：将表现层逻辑放在模版中</li>
+<li>模板放在templates子文件夹中</li>
+<li><code>render_template(template_filename, VAR=...)</code></li>
+<li>变量: <code>&#123;&#123;VAR[|[safe|...]&#125;&#125;</code></li>
+<li>控制结构: 判断、循环、宏<pre class="line-numbers language-html" data-language="html"><code class="language-html">&#123;% if CONDITION %&#125;
+    ...
+&#123;% else %&#125;
+    ...
+&#123;% endif %&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html">&#123;% for ... in ... %&#125;
+    ...
+&#123;% endfor %&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html">&#123;% macro MACRO_DEF(...) %&#125;
+    ...
+&#123;% endmacro %&#125;
+&#123;&#123; MACRO_DEF(...) &#125;&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html">&#123;% include 'common.html' %&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+</li>
+</ul>
+<p>base.html</p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span>
+    &#123;% block head %&#125;
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">></span></span>&#123;% block title %&#125;&#123;% endblock %&#125; - My Application<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">></span></span>
+    &#123;% endblock %&#125;
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">></span></span>
+    &#123;% block body %&#125;
+    &#123;% endblock %&#125;
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html">&#123;% extends "base.html" %&#125;
+&#123;% block title %&#125;Index&#123;% endblock %&#125;
+&#123;% block head %&#125;
+&#123;&#123; super() &#125;&#125;
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>style</span><span class="token punctuation">></span></span><span class="token style"><span class="token language-css">
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>style</span><span class="token punctuation">></span></span>
+&#123;% endblock %&#125;
+&#123;% block body %&#125;
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h1</span><span class="token punctuation">></span></span>Hello, World!<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h1</span><span class="token punctuation">></span></span>
+&#123;% endblock %&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li><p>super()函数：向已有的块(block)添加</p>
+</li>
+<li><p>Flask-Bootstrap: 提供了bootstrap/base.html的模板</p>
+</li>
+<li><p>注入变量</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token decorator annotation punctuation">@main<span class="token punctuation">.</span>app_context_processor</span>
+<span class="token keyword">def</span> <span class="token function">inject_permissions</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> <span class="token builtin">dict</span><span class="token punctuation">(</span>Permission<span class="token operator">=</span>Permission<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+</li>
+</ul>
+<h4 id="Flask-Moment处理本地化时间"><a href="#Flask-Moment处理本地化时间" class="headerlink" title="Flask-Moment处理本地化时间"></a>Flask-Moment处理本地化时间</h4><ul>
+<li>引入flask_moment包<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> flask_moment <span class="token keyword">import</span> Moment
+moment <span class="token operator">=</span> Moment<span class="token punctuation">(</span>app<span class="token punctuation">)</span>
+<span class="token comment"># ...</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></li>
+<li>在base.html引入moment.js库<pre class="line-numbers language-html" data-language="html"><code class="language-html">&#123;% block scripts %&#125;
+&#123;% super %&#125;
+&#123;% include moment.include_moment() %&#125;
+&#123;% endblock %&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+</li>
+</ul>
+<h4 id="Flask-WTF处理Web表单"><a href="#Flask-WTF处理Web表单" class="headerlink" title="Flask-WTF处理Web表单"></a>Flask-WTF处理Web表单</h4><ul>
+<li><p>跨站请求伪造保护（CSRF）</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">app<span class="token punctuation">.</span>config<span class="token punctuation">[</span><span class="token string">'SECRET_KEY'</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></li>
+<li><p>表单类</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">MyForm</span><span class="token punctuation">(</span>Form<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    name <span class="token operator">=</span> StringField<span class="token punctuation">(</span><span class="token string">'What'</span>s your name'<span class="token punctuation">,</span> validator<span class="token operator">=</span><span class="token punctuation">[</span>Required<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+    submit <span class="token operator">=</span> SubmitField<span class="token punctuation">(</span><span class="token string">'Submit'</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+</li>
+<li><p>数据验证</p>
+<ul>
+<li>为表单类属性添加<code>validators</code>属性</li>
+<li>在表单类中添加<code>validate_*</code>方法</li>
+</ul>
+</li>
+<li><p>渲染表单<code>render_template(template_filename, form=form)</code></p>
+</li>
+</ul>
+<p>手动渲染</p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span> <span class="token attr-name">method</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>POST<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+&#123;&#123;form.hidden_tag()&#125;&#125;
+&#123;&#123;form.name.label&#125;&#125; &#123;&#123;form.name(id=...)&#125;&#125;
+&#123;&#123;form.submit()&#125;&#125;
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>form</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>用Bootstrap模板渲染</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token punctuation">&#123;</span><span class="token operator">%</span> <span class="token keyword">import</span> <span class="token string">"bootstrap/wtf.html"</span> <span class="token keyword">as</span> wtf <span class="token operator">%</span><span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#123;</span><span class="token punctuation">&#123;</span> wtf<span class="token punctuation">.</span>quick_form<span class="token punctuation">(</span>form<span class="token punctuation">)</span> <span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>在视图函数中处理表单</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token decorator annotation punctuation">@app<span class="token punctuation">.</span>route</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">,</span> methods<span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">"POST"</span><span class="token punctuation">,</span> <span class="token string">"GET"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token keyword">def</span> <span class="token function">index</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    name <span class="token operator">=</span> <span class="token boolean">None</span>
+    form <span class="token operator">=</span> MyForm<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> form<span class="token punctuation">.</span>validate_on_submit<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        name <span class="token operator">=</span> form<span class="token punctuation">.</span>name<span class="token punctuation">.</span>data
+        form<span class="token punctuation">.</span>name<span class="token punctuation">.</span>data <span class="token operator">=</span> <span class="token string">""</span>
+    <span class="token keyword">return</span> render_template<span class="token punctuation">(</span><span class="token string">"index.html"</span><span class="token punctuation">,</span> form<span class="token operator">=</span>form<span class="token punctuation">,</span> name<span class="token operator">=</span>name<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>注：POST和GET由同一个视图函数处理，第一次连接GET获取页面，POST到同一个页面</p>
+<ul>
+<li>POST/重定向/GET模式<br>解决：若POST是最后一个请求，则刷新页面会提示重新提交表单<br>方法：POST的响应重定向到一个GET请求</li>
+</ul>
+<h4 id="Flask-SQLAlchemy处理数据库"><a href="#Flask-SQLAlchemy处理数据库" class="headerlink" title="Flask-SQLAlchemy处理数据库"></a>Flask-SQLAlchemy处理数据库</h4><ul>
+<li>配置SQLALCHEMY_DATABASE_URI</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">mysql<span class="token punctuation">:</span><span class="token operator">//</span>username<span class="token punctuation">:</span>password@hostname<span class="token operator">/</span>database
+sqlite<span class="token punctuation">:</span><span class="token operator">//</span><span class="token operator">//</span>absolute<span class="token operator">/</span>path<span class="token operator">/</span>to<span class="token operator">/</span>database<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<ul>
+<li>定义模型，db.Model的子类<ul>
+<li><code>__tablename__</code>定义表名</li>
+<li>定义字段：<code>db.Column</code>类的实例，字段类型和字段选项</li>
+<li>定义关系：<code>db.relationship</code>类的实例</li>
+</ul>
+</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">User</span><span class="token punctuation">:</span>
+    __tablename__ <span class="token operator">=</span> <span class="token string">"user"</span>
+    role_id <span class="token operator">=</span> db<span class="token punctuation">.</span>Column<span class="token punctuation">(</span>db<span class="token punctuation">.</span>Integer<span class="token punctuation">,</span> db<span class="token punctuation">.</span>ForeignKey<span class="token punctuation">(</span><span class="token string">"roles.id"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token keyword">class</span> <span class="token class-name">Role</span><span class="token punctuation">:</span>
+    __tablename__ <span class="token operator">=</span> <span class="token string">"role"</span>
+    users <span class="token operator">=</span> db<span class="token punctuation">.</span>relationship<span class="token punctuation">(</span><span class="token string">"User"</span><span class="token punctuation">,</span> backref<span class="token operator">=</span><span class="token string">"role"</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>注：role_id是真实存在的字段，users则不是；<code>db.ForeignKey()</code>的第一个参数定义外键连接roles表的id字段；db.relationship()的第一个参数定义关系另一端是哪一个模型，backref参数为User模型添加一个role字段，直接访问Role模型</p>
+<ul>
+<li>创建表/删除表</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">db<span class="token punctuation">.</span>create_all<span class="token punctuation">(</span><span class="token punctuation">)</span>
+db<span class="token punctuation">.</span>drop_all<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<ul>
+<li>插入行/修改行/删除行</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">admin_role <span class="token operator">=</span> Role<span class="token punctuation">(</span>name<span class="token operator">=</span><span class="token string">"admin"</span><span class="token punctuation">)</span>
+db<span class="token punctuation">.</span>session<span class="token punctuation">.</span>add<span class="token punctuation">(</span>admin_role<span class="token punctuation">)</span>
+db<span class="token punctuation">.</span>session<span class="token punctuation">.</span>commit<span class="token punctuation">(</span><span class="token punctuation">)</span>
+admin_role<span class="token punctuation">.</span>name <span class="token operator">=</span> <span class="token string">"Administrator"</span>
+db<span class="token punctuation">.</span>session<span class="token punctuation">.</span>add<span class="token punctuation">(</span>admin_role<span class="token punctuation">)</span>
+db<span class="token punctuation">.</span>session<span class="token punctuation">.</span>commit<span class="token punctuation">(</span><span class="token punctuation">)</span>
+db<span class="token punctuation">.</span>session<span class="token punctuation">.</span>delete<span class="token punctuation">(</span>admin_role<span class="token punctuation">)</span>
+db<span class="token punctuation">.</span>session<span class="token punctuation">.</span>commit<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ul>
+<li>查询</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">User<span class="token punctuation">.</span>query<span class="token punctuation">.</span><span class="token builtin">all</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+User<span class="token punctuation">.</span>query<span class="token punctuation">.</span>filter_by<span class="token punctuation">(</span>role<span class="token operator">=</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token builtin">all</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+User<span class="token punctuation">.</span>query<span class="token punctuation">.</span>get_or_404<span class="token punctuation">(</span><span class="token builtin">id</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<ul>
+<li>事件监听</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">db<span class="token punctuation">.</span>event<span class="token punctuation">.</span>listen<span class="token punctuation">(</span>Post<span class="token punctuation">.</span>body<span class="token punctuation">,</span> <span class="token string">'set'</span><span class="token punctuation">,</span> Post<span class="token punctuation">.</span>on_changed_body<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<ul>
+<li>多对多关系</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">registrations <span class="token operator">=</span> db<span class="token punctuation">.</span>Table<span class="token punctuation">(</span>
+    <span class="token string">'registrations'</span><span class="token punctuation">,</span>
+    db<span class="token punctuation">.</span>Column<span class="token punctuation">(</span>
+        <span class="token string">'student_id'</span><span class="token punctuation">,</span> 
+        db<span class="token punctuation">.</span>Integer<span class="token punctuation">,</span> 
+        db<span class="token punctuation">.</span>ForeignKey<span class="token punctuation">(</span><span class="token string">'students.id'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">)</span><span class="token punctuation">,</span>
+    db<span class="token punctuation">.</span>Column<span class="token punctuation">(</span>
+        <span class="token string">'class_id'</span><span class="token punctuation">,</span> 
+        db<span class="token punctuation">.</span>Integer<span class="token punctuation">,</span> 
+        db<span class="token punctuation">.</span>ForeignKey<span class="token punctuation">(</span><span class="token string">'classes.id'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">)</span>
+<span class="token punctuation">)</span>
+<span class="token keyword">class</span> <span class="token class-name">Student</span><span class="token punctuation">(</span>db<span class="token punctuation">.</span>Model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token builtin">id</span> <span class="token operator">=</span> db<span class="token punctuation">.</span>Column<span class="token punctuation">(</span>db<span class="token punctuation">.</span>Integer<span class="token punctuation">,</span> primary_key<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+    name <span class="token operator">=</span> db<span class="token punctuation">.</span>Column<span class="token punctuation">(</span>db<span class="token punctuation">.</span>String<span class="token punctuation">)</span>
+    classes <span class="token operator">=</span> db<span class="token punctuation">.</span>relationship<span class="token punctuation">(</span><span class="token string">'Class'</span><span class="token punctuation">,</span>
+    secondary<span class="token operator">=</span>registrations<span class="token punctuation">,</span>
+    backref<span class="token operator">=</span>db<span class="token punctuation">.</span>backref<span class="token punctuation">(</span><span class="token string">'students'</span><span class="token punctuation">,</span> lazy<span class="token operator">=</span><span class="token string">'dynamic'</span><span class="token punctuation">)</span><span class="token punctuation">,</span> lazy<span class="token operator">=</span><span class="token string">'dynamic'</span><span class="token punctuation">)</span>
+
+<span class="token keyword">class</span> <span class="token class-name">Class</span><span class="token punctuation">(</span>db<span class="token punctuation">.</span>Model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token builtin">id</span> <span class="token operator">=</span> db<span class="token punctuation">.</span>Column<span class="token punctuation">(</span>db<span class="token punctuation">.</span>Integer<span class="token punctuation">,</span> primary_key <span class="token operator">=</span> <span class="token boolean">True</span><span class="token punctuation">)</span>
+    name <span class="token operator">=</span> db<span class="token punctuation">.</span>Column<span class="token punctuation">(</span>db<span class="token punctuation">.</span>String<span class="token punctuation">)</span>
+``` 
+
+```python
+<span class="token keyword">class</span> <span class="token class-name">Follow</span><span class="token punctuation">(</span>db<span class="token punctuation">.</span>Model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    follower_id <span class="token operator">=</span> db<span class="token punctuation">.</span>Column<span class="token punctuation">(</span>db<span class="token punctuation">.</span>Integer<span class="token punctuation">,</span> db<span class="token punctuation">.</span>ForeignKey<span class="token punctuation">(</span><span class="token string">'users.id'</span><span class="token punctuation">)</span><span class="token punctuation">,</span> primary_key<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+    followed_id <span class="token operator">=</span> db<span class="token punctuation">.</span>Column<span class="token punctuation">(</span>db<span class="token punctuation">.</span>Integer<span class="token punctuation">,</span> db<span class="token punctuation">.</span>ForeignKey<span class="token punctuation">(</span><span class="token string">'users.id'</span><span class="token punctuation">)</span><span class="token punctuation">,</span> primary_key<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+    timestamp <span class="token operator">=</span> db<span class="token punctuation">.</span>Column<span class="token punctuation">(</span>db<span class="token punctuation">.</span>DateTime<span class="token punctuation">,</span> default<span class="token operator">=</span>datetime<span class="token punctuation">.</span>utcnow<span class="token punctuation">)</span>
+    
+<span class="token keyword">class</span> <span class="token class-name">User</span><span class="token punctuation">(</span>db<span class="token punctuation">.</span>Model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    followed <span class="token operator">=</span> db<span class="token punctuation">.</span>relationship<span class="token punctuation">(</span>
+        <span class="token string">'Follow'</span><span class="token punctuation">,</span> 
+        foreign_keys<span class="token operator">=</span><span class="token punctuation">[</span>Follow<span class="token punctuation">.</span>follower_id<span class="token punctuation">]</span><span class="token punctuation">,</span> 
+        backref <span class="token operator">=</span> db<span class="token punctuation">.</span>backref<span class="token punctuation">(</span><span class="token string">'follower'</span><span class="token punctuation">,</span> lazy<span class="token operator">=</span><span class="token string">'joined'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        lazy <span class="token operator">=</span> <span class="token string">'dynamic'</span><span class="token punctuation">,</span>
+        cascade <span class="token operator">=</span> <span class="token string">'all, delete-orphan'</span>   
+    <span class="token punctuation">)</span>
+    followers <span class="token operator">=</span> db<span class="token punctuation">.</span>relationship<span class="token punctuation">(</span>
+        <span class="token string">'Follow'</span><span class="token punctuation">,</span> 
+        foreign_keys<span class="token operator">=</span><span class="token punctuation">[</span>Follow<span class="token punctuation">.</span>followed_id<span class="token punctuation">]</span><span class="token punctuation">,</span>
+        backref <span class="token operator">=</span> db<span class="token punctuation">.</span>backref<span class="token punctuation">(</span><span class="token string">'followee'</span><span class="token punctuation">,</span> lazy<span class="token operator">=</span><span class="token string">'joined'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        lazy <span class="token operator">=</span> <span class="token string">'dynamic'</span><span class="token punctuation">,</span>
+        cascade <span class="token operator">=</span> <span class="token string">'all, delete-orphan'</span>    
+    <span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>注1<code>lazy = &#39;dynamic&#39;</code>表示<code>followed</code>/<code>followers</code>属性返回一个查询(<code>query</code>)而不是查询结果；<br>注2<code>lazy=&#39;joined&#39;</code>表示立即从联结查询中加载对象，如<code>user.followed.all()</code>，<code>followed</code>返回的是查询(<code>dynamic</code>)，<code>all</code>返回所有<code>Follow</code>对象，每一个对象的<code>followed</code>和<code>followee</code>查询以及被加载；如果是默认值<code>select</code>，对象的<code>followed</code>和<code>followee</code>查询不会被加载；<br>注3<code>cascade = &#39;all, delete-orphan&#39;</code>配置在该对象操作会对相关对象造成的影响，这里设置成该对象被删除时，所有指向该对象的对象都删除。</p>
+<ul>
+<li>联结查询</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">db<span class="token punctuation">.</span>session<span class="token punctuation">.</span>query<span class="token punctuation">(</span>Post<span class="token punctuation">)</span><span class="token punctuation">.</span>select_from<span class="token punctuation">(</span>Follow<span class="token punctuation">)</span><span class="token punctuation">.</span>filter_by<span class="token punctuation">(</span>follower_id<span class="token operator">=</span>self<span class="token punctuation">.</span><span class="token builtin">id</span><span class="token punctuation">)</span><span class="token punctuation">.</span>join<span class="token punctuation">(</span>Post<span class="token punctuation">,</span> Follow<span class="token punctuation">.</span>followed_id <span class="token operator">==</span> Post<span class="token punctuation">.</span>author_id<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>注1<code>db.session.query(Post)</code>: 查询结果返回Post对象<br>注2<code>select_from(Follow)</code>: 从Follow表开始查询<br>注3<code>join(Post, Follow.followed_id == Post.author_id)</code>: 联结Post表，联结的条件是<code>Follow.followed_id == Post.author_id</code></p>
+<h4 id="Flask-Migrate实现数据库迁移"><a href="#Flask-Migrate实现数据库迁移" class="headerlink" title="Flask-Migrate实现数据库迁移"></a>Flask-Migrate实现数据库迁移</h4><ul>
+<li>添加迁移命令</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> flask_migrate <span class="token keyword">import</span> Migrate<span class="token punctuation">,</span> MigrateCommand
+migrate <span class="token operator">=</span> Migrate<span class="token punctuation">(</span>app<span class="token punctuation">,</span> db<span class="token punctuation">)</span>
+manager<span class="token punctuation">.</span>add_command<span class="token punctuation">(</span><span class="token string">'db'</span><span class="token punctuation">,</span> MigrateCommand<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<ul>
+<li>使用迁移命令</li>
+</ul>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">python manage.py db init &#x2F;&#x2F; 迁移仓库初始化
+python manage.py db migrate -m &quot;...&quot; &#x2F;&#x2F; 创建迁移脚本
+python manage.py db upgrade &#x2F;&#x2F; 更新数据库<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="Flask-Mail提供电子邮件支持"><a href="#Flask-Mail提供电子邮件支持" class="headerlink" title="Flask-Mail提供电子邮件支持"></a>Flask-Mail提供电子邮件支持</h4><p>Flask-Mail连接到SMTP服务器或localhost:25（默认），将邮件提交发送</p>
+<ul>
+<li>配置SMTP服务器<br>MAIL_SERVER<br>MAIL_PORT<br>MAIL_USE_TLS<br>MAIL_USE_SSL<br>MAIL_USERNAME<br>MAIL_PASSWORD</li>
+</ul>
+<p>注：敏感信息如MAIL_USERNAME，MAIL_PASSWORD最好通过环境变量读入</p>
+<ul>
+<li>邮件接口 </li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">msg<span class="token operator">=</span>Message<span class="token punctuation">(</span><span class="token string">"text subject"</span><span class="token punctuation">,</span> sender<span class="token operator">=</span><span class="token string">"me@email.com"</span><span class="token punctuation">,</span> recipients<span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">"someone@email.com"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+msg<span class="token punctuation">.</span>body <span class="token operator">=</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+msg<span class="token punctuation">.</span>html <span class="token operator">=</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token keyword">with</span> app<span class="token punctuation">.</span>app_context<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    mail<span class="token punctuation">.</span>send<span class="token punctuation">(</span>msg<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ul>
+<li>异步发送邮件</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">send_email_async</span><span class="token punctuation">(</span>app<span class="token punctuation">,</span> msg<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">with</span> app<span class="token punctuation">.</span>app_context<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        mail<span class="token punctuation">.</span>send<span class="token punctuation">(</span>msg<span class="token punctuation">)</span>
+
+<span class="token keyword">def</span> <span class="token function">send_email</span><span class="token punctuation">(</span>to<span class="token punctuation">,</span> subject<span class="token punctuation">,</span> template<span class="token punctuation">,</span> <span class="token operator">**</span>kwargs<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    msg <span class="token operator">=</span> Message<span class="token punctuation">(</span>current_app<span class="token punctuation">.</span>config<span class="token punctuation">[</span><span class="token string">'FLASK_MAIL_SUBJECT_PREFIX'</span><span class="token punctuation">]</span> <span class="token operator">+</span> subject<span class="token punctuation">,</span> sender<span class="token operator">=</span>current_app<span class="token punctuation">.</span>config<span class="token punctuation">[</span><span class="token string">'FLASK_MAIL_SENDER'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> recipients<span class="token operator">=</span><span class="token punctuation">[</span>to<span class="token punctuation">]</span><span class="token punctuation">)</span>
+    msg<span class="token punctuation">.</span>body <span class="token operator">=</span> render_template<span class="token punctuation">(</span>template<span class="token operator">+</span><span class="token string">'.txt'</span><span class="token punctuation">,</span> <span class="token operator">**</span>kwargs<span class="token punctuation">)</span>
+    msg<span class="token punctuation">.</span>html <span class="token operator">=</span> render_template<span class="token punctuation">(</span>template<span class="token operator">+</span><span class="token string">'.html'</span><span class="token punctuation">,</span> <span class="token operator">**</span>kwargs<span class="token punctuation">)</span>
+    thr <span class="token operator">=</span> Thread<span class="token punctuation">(</span>target<span class="token operator">=</span>send_email_async<span class="token punctuation">,</span> args<span class="token operator">=</span><span class="token punctuation">[</span>current_app<span class="token punctuation">,</span> msg<span class="token punctuation">]</span><span class="token punctuation">)</span>
+    thr<span class="token punctuation">.</span>start<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> thr
+```   
+
+<span class="token comment">#### 程序结构</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>.<br>├── app<br>│   ├── <strong>init</strong>.py<br>│   ├── email.py<br>│   ├── main<br>│   │   ├── <strong>init.py<br>│   │   ├── errors.py<br>│   │   ├── forms.py<br>│   │   └── views.py<br>│   ├── models.py<br>│   ├── static<br>│   └── templates<br>├── config.py<br>├── manage.py<br>├── migrations<br>├── requirements<br>│   ├── common.txt<br>│   ├── dev.txt<br>│   ├── docker.txt<br>│   ├── heroku.txt<br>│   └── prod.txt<br>├── requirements.txt<br>└── tests<br>└── __init</strong>.py</p>
+<pre class="line-numbers language-none"><code class="language-none">
+#### 测试
+
+##### 单元测试 + Flask Script 添加测试命令
+* 编写单元测试
+
+&#96;&#96;&#96;python
+import unittest
+from flask import current_app
+from app import create_app, db
+
+class BasicTestCase(unittest.TestCase):
+    def setUp(self):
+        self.app &#x3D; create_app(&#39;testing&#39;)
+        self.app_context &#x3D; self.app.app_context()
+        self.app_context.push()
+        db.create_all()
+        
+        ...
+    
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+        self.app_context.pop()
+        
+        ...
+    
+    def test_...():
+        ...<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ul>
+<li>添加tests命令</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token decorator annotation punctuation">@manager<span class="token punctuation">.</span>command</span>
+<span class="token keyword">def</span> <span class="token function">test</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">import</span> unittest
+    tests <span class="token operator">=</span> unittest<span class="token punctuation">.</span>TestLoader<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>discover<span class="token punctuation">(</span><span class="token string">"tests"</span><span class="token punctuation">)</span>
+    unittest<span class="token punctuation">.</span>TextTestRunner<span class="token punctuation">(</span>verbosity<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">.</span>run<span class="token punctuation">(</span>tests<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ul>
+<li>运行所有单元测试</li>
+</ul>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">python manage.py tests<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h5 id="测试客户端"><a href="#测试客户端" class="headerlink" title="测试客户端"></a>测试客户端</h5><pre class="line-numbers language-python" data-language="python"><code class="language-python">self<span class="token punctuation">.</span>client <span class="token operator">=</span> self<span class="token punctuation">.</span>app<span class="token punctuation">.</span>test_client<span class="token punctuation">(</span>use_cookies<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h5 id="ForgeryPy库生成随机数据"><a href="#ForgeryPy库生成随机数据" class="headerlink" title="ForgeryPy库生成随机数据"></a>ForgeryPy库生成随机数据</h5><h4 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h4><h3 id="实例：社交博客"><a href="#实例：社交博客" class="headerlink" title="实例：社交博客"></a>实例：社交博客</h3><h4 id="登录、注册、以及邮箱确认"><a href="#登录、注册、以及邮箱确认" class="headerlink" title="登录、注册、以及邮箱确认"></a>登录、注册、以及邮箱确认</h4><ul>
+<li>Flask-Login: 管理登录</li>
+<li>存储密码的散列值：Werkzeug</li>
+<li>邮箱确认：用itsdangerous生成令牌</li>
+<li>POST/重定向/GET模式</li>
+</ul>
+<h4 id="用户资料以及资料编辑页面"><a href="#用户资料以及资料编辑页面" class="headerlink" title="用户资料以及资料编辑页面"></a>用户资料以及资料编辑页面</h4><ul>
+<li>用户权限（用户，协管，管理员）：一对多的数据模型，Role&lt;-+User</li>
+<li>用户头像：gavatar头像管理服务</li>
+<li>用户级/管理员级资料编辑页面</li>
+</ul>
+<h4 id="博客文章以及文章编辑器"><a href="#博客文章以及文章编辑器" class="headerlink" title="博客文章以及文章编辑器"></a>博客文章以及文章编辑器</h4><ul>
+<li>一对多的数据库模型，User&lt;-+Post</li>
+<li>分页导航, Pagination对象</li>
+<li>markdown-&gt;HTML: markdown-服务器端; flask-pagedown-客户端</li>
+<li>传输的是markdown数据，在服务器转html后存在数据库（安全）</li>
+</ul>
+<h4 id="关注功能"><a href="#关注功能" class="headerlink" title="关注功能"></a>关注功能</h4><ul>
+<li>多对多的数据库模型，自引用关系：User&lt;-&gt;Follow&lt;-&gt;User</li>
+<li>分页显示关注列表</li>
+<li>联结查询：Follow-&gt;Post</li>
+</ul>
+<h4 id="评论功能"><a href="#评论功能" class="headerlink" title="评论功能"></a>评论功能</h4><ul>
+<li>一对多的数据库模型，User&lt;-+Comment+-&gt;Post</li>
+</ul>
+<h3 id="实例：REST服务器"><a href="#实例：REST服务器" class="headerlink" title="实例：REST服务器"></a>实例：REST服务器</h3><ul>
+<li>基于令牌的认证：Flask-HTTPAuth</li>
+<li>JSON序列化</li>
+<li>分页大型资源</li>
+</ul>
+
+  
+  
+
+</div>
+
+          
+<footer>
+  <span className='cc-licence'>CC BY-NC-SA 4.0</span> © 2020 🐣
+</footer>
+
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+  <script src="/js/nanobar.min.js"></script>
+  <script>
+    var options = {
+      classname: 'nanobar',
+      id: 'myNanobar'
+    };
+    var nanobar = new Nanobar(options);
+    nanobar.go(30);
+    nanobar.go(76);
+    nanobar.go(100);
+  </script>
+
+</body>
+
+</html>

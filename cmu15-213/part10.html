@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <!-- Minima -->
+  <!-- Hexo theme created by @adisaktijrs -->
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+
+  
+  <title>CMU 15-213 Part10 Dynamic Memory Allocation - yanmulin</title>
+  
+  <link rel="canonical" href="https://yanmulin.me/cmu15-213/part10.html">
+  
+  <meta name="description" content="">
+  
+  
+  <meta name="author" content="yanmulin">
+  <meta property="og:site_name" content="颜木林的流水账" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="CMU 15-213 Part10 Dynamic Memory Allocation - yanmulin" />
+  
+  <meta property="og:description" content="">
+  
+  <meta property="og:url" content="https://yanmulin.me/cmu15-213/part10.html" />
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Preload fonts
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="preload" href="../fonts/dm-serif-display-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../fonts/inter-v2-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+<link rel="stylesheet" href="/css/normalize.css">
+
+  
+<link rel="stylesheet" href="/css/skeleton.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+<link rel="stylesheet" href="/css/prism-dark.css">
+
+  
+<link rel="stylesheet" href="/css/prism-line-numbers.css">
+
+  <!-- User css -->
+  
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+
+  <!-- Custom Theme Color Style
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <style>
+  a:not(.icon) {
+    text-decoration-color: #0FA0CE;
+    background-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 50%,
+      #0FA0CE 50%
+    );
+  }
+  .category-link {]
+    text-decoration-color: transparent;
+    border-color: #0FA0CE;
+  }
+  blockquote {
+    border-left: 8px solid #0FA0CE;
+  }
+  .nanobar .bar {
+    background: #0FA0CE;
+  }
+  .post-body h3::before {
+    color: #0FA0CE;
+  } 
+  .post-body h4::before {
+    color: #0FA0CE;
+  } 
+  .post-body h5::before {
+    color: #0FA0CE;
+  } 
+  .post-body h6::before {
+    color: #0FA0CE;
+  }
+  .button.button-primary:hover,
+  button.button-primary:hover,
+  input[type="submit"].button-primary:hover,
+  input[type="reset"].button-primary:hover,
+  input[type="button"].button-primary:hover,
+  .button.button-primary:focus,
+  button.button-primary:focus,
+  input[type="submit"].button-primary:focus,
+  input[type="reset"].button-primary:focus,
+  input[type="button"].button-primary:focus {
+    background-color: #0FA0CE;
+    border-color: #0FA0CE;
+  }
+  input[type="email"]:focus,
+  input[type="number"]:focus,
+  input[type="search"]:focus,
+  input[type="text"]:focus,
+  input[type="tel"]:focus,
+  input[type="url"]:focus,
+  input[type="password"]:focus,
+  textarea:focus,
+  select:focus {
+    border: 1px solid #0FA0CE;
+  }
+</style>
+
+  <!-- Google Analytics (With Privacy Settings On)
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body class="darkmode">
+  <div class="container">
+    <div class="row">
+      <div>
+        <div class="row">
+  
+  <div class="six columns">
+    <h1 class="mt-2">
+      颜木林的流水账
+    </h1>
+  </div>
+  
+
+  <div class="twelve columns">
+    <div class="row" style="margin-bottom: 2.6rem">
+        
+          <a href="/">Home</a>
+          
+            
+              <a href="/archives" class="ml">Notes</a>
+            
+          
+            
+              <a href="/About" class="ml">About</a>
+            
+          
+        
+      </div>
+  </div>
+
+  
+</div>
+
+        <div class="trans">
+            <h2>CMU 15-213 Part10 Dynamic Memory Allocation</h2>
+
+  <h3 id="分配器的测量指标"><a href="#分配器的测量指标" class="headerlink" title="分配器的测量指标"></a>分配器的测量指标</h3><p>分配器有<strong>分配(Allocate)**和</strong>释放(Free)<strong>两种操作。给定一系列操作R<sub>0</sub>, R<sub>1</sub>, …, R<sub>n-1</sub>，我们使用</strong>吞吐量()<strong>和</strong>内存利用率()**来评价分配器。我们的目标是尽可能提高吞吐量和内存利用率，但这两个指标是相互矛盾，无法兼顾的。我们将吞吐量定义单位时间能够处理操作的数目。比如某分配器在10s处理了5000个malloc和5000个free，则吞吐量为10000操作/s。而内存利用率则有很多定义方法，其中一个是峰值利用率。峰值利用率是一系列操作后，内存利用率(有效负载/可用内存)达到的最大值。</p>
+<p>下面介绍3种类型的分配器。注意分配器必须返回对齐的地址，下面的分配器以返回8字节对齐的地址为例。</p>
+<h3 id="隐式列表分配器-Implict-List-Allocator"><a href="#隐式列表分配器-Implict-List-Allocator" class="headerlink" title="隐式列表分配器(Implict List Allocator)"></a>隐式列表分配器(Implict List Allocator)</h3><p>分配器将可用内存划分为一个个内存块，有些已经分配给用户程序，有些是空闲的。内存块在可用内存中紧挨着排列。每个内存块返回有效负载的首地址给用户程序，但是除了有效负载，内存块还需要空间保存块的信息，比如块大小，分配状态等。由于分配的内存块大小是以8字节对齐，所以表示大小的字节最低3位总是全0，那么使用这3位来存储分配状态。块信息一般放在块头和块尾，中间是有效负载，必要时还需要填充额外字节来达到对齐的要求。”隐式列表“是指将块大小作为偏移计算下一个内存块的位置，从而能够遍历所有内存块。放在块尾的块信息是为了下一级块能够找到前一个内存头部。列表尾部是一个标记为已分配的空块，作为搜索停止的哨兵。</p>
+<p><img src="https://i.loli.net/2020/02/10/YAHCro9Zkapn7fw.png" alt="隐式列表分配器的内存块"></p>
+<p><img src="https://i.loli.net/2020/02/10/kcRwmLQZKWTaiD2.png" alt="内存块组成隐式列表"></p>
+<ul>
+<li><p>分配操作：在内存块中搜索符合条件的闲置内存块。可以采用不同的匹配策略，比如首次匹配，返回第一个符合条件的闲置块(&gt;=请求大小)，或者最佳匹配，返回最符合条件的闲置块(大于请求大小的闲置块中，返回最小的)。如果闲置块大于请求大小，返回前需要分割闲置块。所以首次匹配存在内存利用率低的问题，因为会在内存中留下不连续的内存碎片。最佳匹配则需要遍历整个内存块列表，导致吞吐率低。</p>
+</li>
+<li><p>分割操作(Splitting)：分配操作找到合适的闲置块后，如果闲置块太大，返回前需要分割闲置块，将剩余部分作为一个新的闲置块放到列表中。但注意内存块有最小大小，比如在这个例子中，内存块至少要能够容纳头尾两个块信息。</p>
+</li>
+<li><p>释放操作：释放内存时，更改块信息中的分配状态。同时，检查释放块前后有无闲置块，如果有则进行合并操作。但是合并操作的时机是可选的，可以在释放时合并，也可以选择在分配搜索时合并。分配器需要维护的一个不变式是：内存中不存在两个连续的闲置块。该不变式保证了在请求一片大内存时，内存中不会出现尽管存在符合要求的连续闲置空间，但找不到符合要求的闲置块这种情况。</p>
+</li>
+<li><p>合并操作(Coalesce)：合并操作将两个及以上的连续闲置块合并成一个。此时内存块尾部保存的块信息起到了作用，访问被释放块前一个字节，就可以检查前一个块的分配情况。</p>
+</li>
+</ul>
+<h3 id="显式列表分配器-Explicit-List-Allocator"><a href="#显式列表分配器-Explicit-List-Allocator" class="headerlink" title="显式列表分配器(Explicit List Allocator)"></a>显式列表分配器(Explicit List Allocator)</h3><p>隐式列表分配器的问题在于搜索闲置内存块时会经过许多已分配的内存块，浪费时间。显式列表分配器基于隐式列表分配器进行改进。虽然分配器不允许更改已分配内存块的有效负载，但是闲置内存块的负载部分不受此限制。显式列表分配器维护一个闲置内存块的双向链表，链表指针放在闲置内存块的负载部分。这样改进会影响分配器允许的最小内存块大小，除了头尾两个块信息外，现在还需要容纳两个指针的空间。</p>
+<p><img src="https://i.loli.net/2020/02/10/FZ1YuSoLs8cDAJd.png" alt="显式列表分配器"></p>
+<ul>
+<li>分配操作：除了上面描述的分配步骤外，还需要将分配块从闲置链表中删除。</li>
+</ul>
+<p><img src="https://i.loli.net/2020/02/10/pGwfnlkWgHVuvDh.png" alt="显式列表分配内存块"></p>
+<ul>
+<li>释放操作：把释放的内存块插入闲置链表的头部。</li>
+</ul>
+<p><img src="https://i.loli.net/2020/02/10/tNOmhAioPEyWg4Q.png" alt="显式列表释放内存块"></p>
+<h3 id="多列表分配器-Segregated-List-Allocator"><a href="#多列表分配器-Segregated-List-Allocator" class="headerlink" title="多列表分配器(Segregated List Allocator)"></a>多列表分配器(Segregated List Allocator)</h3><p>如果实现显式列表分配器时为了性能采取首次匹配，那么内存利用率将会降低。多列表分配器维护多个链表，每个链表保存某个尺寸范围的闲置内存块。每次分配时，到对应的链表中搜索合适的内存块，可以使找到的内存块更加匹配，提高内存利用率。</p>
+<p><img src="https://i.loli.net/2020/02/10/TOvik3UNWJaVrjl.png" alt="多列表分配器"></p>
+<h3 id="附：Malloc-Lab"><a href="#附：Malloc-Lab" class="headerlink" title="附：Malloc Lab"></a>附：Malloc Lab</h3><p>课上给Malloc Lab的建议</p>
+<ul>
+<li><p>使用宏/内联函数，比如用宏定义对内存块头尾部的操作</p>
+</li>
+<li><p>指针运算，<code>p+4</code>的值为地址p偏移<code>4*sizeof(p)</code></p>
+</li>
+<li><p>不变式检查器，只在错误时输出信息(verbose选项)</p>
+</li>
+<li><p>使用valgrind检查内存泄漏，使用gprof测量性能</p>
+</li>
+</ul>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">ifdef</span> <span class="token expression">DEBUG</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token expression"><span class="token function">CHECKHEAP</span><span class="token punctuation">(</span>lineno<span class="token punctuation">)</span> <span class="token function">printf</span><span class="token punctuation">(</span></span><span class="token string">"%s\n"</span><span class="token expression"><span class="token punctuation">,</span> <span class="token constant">__func__</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token function">mm_checkheap</span><span class="token punctuation">(</span><span class="token constant">__LINE__</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<ul>
+<li>检查链表环。</li>
+</ul>
+
+
+          
+<footer>
+  <span className='cc-licence'>CC BY-NC-SA 4.0</span> © 2020 🐣
+</footer>
+
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+  <script src="/js/nanobar.min.js"></script>
+  <script>
+    var options = {
+      classname: 'nanobar',
+      id: 'myNanobar'
+    };
+    var nanobar = new Nanobar(options);
+    nanobar.go(30);
+    nanobar.go(76);
+    nanobar.go(100);
+  </script>
+
+</body>
+
+</html>

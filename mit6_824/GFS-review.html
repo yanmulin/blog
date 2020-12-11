@@ -11,21 +11,21 @@
   <meta charset="utf-8">
 
   
-  <title>Google File System Review</title>
+  <title>Google File System Review - yanmulin</title>
   
-  <link rel="canonical" href="https://yanmulin.me/2020/11/27/GFS-review/">
+  <link rel="canonical" href="https://yanmulin.me/mit6_824/GFS-review.html">
   
-  <meta name="description" content="GFS是谷歌的三驾马车之一，也是分布式系统学习过程躲避不开的经典案例。经典论文常读常新，本文不追求面面俱到，只总结对我有启发的要点。 架构一个GFS集群包含一个Master节点和若干chunkserver节点，节点进程在Linux用户态运行。Master节点维护文件系统的元数据，而文件数据以chun">
+  <meta name="description" content="">
   
   
   <meta name="author" content="yanmulin">
   <meta property="og:site_name" content="颜木林的流水账" />
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="Google File System Review" />
+  <meta property="og:title" content="Google File System Review - yanmulin" />
   
-  <meta property="og:description" content="GFS是谷歌的三驾马车之一，也是分布式系统学习过程躲避不开的经典案例。经典论文常读常新，本文不追求面面俱到，只总结对我有启发的要点。 架构一个GFS集群包含一个Master节点和若干chunkserver节点，节点进程在Linux用户态运行。Master节点维护文件系统的元数据，而文件数据以chun">
+  <meta property="og:description" content="">
   
-  <meta property="og:url" content="https://yanmulin.me/2020/11/27/GFS-review/" />
+  <meta property="og:url" content="https://yanmulin.me/mit6_824/GFS-review.html" />
 
   <!-- Mobile Specific Metas
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
@@ -84,6 +84,15 @@
   .post-body h3::before {
     color: #0FA0CE;
   } 
+  .post-body h4::before {
+    color: #0FA0CE;
+  } 
+  .post-body h5::before {
+    color: #0FA0CE;
+  } 
+  .post-body h6::before {
+    color: #0FA0CE;
+  }
   .button.button-primary:hover,
   button.button-primary:hover,
   input[type="submit"].button-primary:hover,
@@ -122,33 +131,36 @@
       <div>
         <div class="row">
   
+  <div class="six columns">
+    <h1 class="mt-2">
+      颜木林的流水账
+    </h1>
+  </div>
+  
 
   <div class="twelve columns">
     <div class="row" style="margin-bottom: 2.6rem">
         
+          <a href="/">Home</a>
           
             
-              <a href="/archives" class="mr u-pull-right">Notes</a>
+              <a href="/archives" class="ml">Notes</a>
             
           
             
-              <a href="/About" class="mr u-pull-right">About</a>
+              <a href="/About" class="ml">About</a>
             
           
-          <a href="/" class="u-pull-right mr">Home</a>
         
       </div>
   </div>
 
   
-    <h2>Google File System Review</h2>
-    <p class="post-info">Nov 27, 2020 <a class="category-link" href="/categories/MIT-8-624-Papers/">MIT 8.624 Papers</a></p>
-  
 </div>
 
         <div class="trans">
-          <div class="post-body">
-  
+            <h2>Google File System Review</h2>
+
   <p>GFS是谷歌的三驾马车之一，也是分布式系统学习过程躲避不开的经典案例。经典论文常读常新，本文不追求面面俱到，只总结对我有启发的要点。</p>
 <h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><p>一个GFS集群包含一个Master节点和若干chunkserver节点，节点进程在Linux用户态运行。Master节点维护文件系统的元数据，而文件数据以chunk为基本单位存储在chunkserver节点中。chunk由全局唯一的句柄（handle）识别，Master管理文件名到chunk句柄的映射，以及chunk句柄到chunkserver地址的映射。</p>
 <p>Master中某些元数据存储在内存和硬盘中，比如文件名到chunk句柄的映射。Master采用logging和checkpoint的持久化策略，因为logging是顺序写入磁盘，相比数据库（B-tree）随机写入的速度提高不少。但有些元数据只存在内存中，比如chunk句柄到chunkserver的映射。由于内存的易失性，Master启动时需要主动向chunkserver请求所有chunk信息，往后周期性的心跳也被利用来更新chunk句柄到chunkserver的映射。</p>
@@ -167,10 +179,6 @@
 <p>Master的影子副本存放较老的数据，只读，为要求较宽松的客户端提供服务，降低真正Master的压力。</p>
 <h3 id="缺陷"><a href="#缺陷" class="headerlink" title="缺陷"></a>缺陷</h3><p>GFS的缺陷在于Master是单一故障点。单一Master有限的内存大小和请求处理速度使其容易成为系统瓶颈。尽管Master有备份，但Master的故障恢复仍需要人工干预，效率较低。</p>
 
-  
-  
-
-</div>
 
           
 <footer>

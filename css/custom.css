@@ -344,6 +344,18 @@ body.darkmode {
   content: "# ";
 }
 
+.post-body h4::before {
+  content: "## ";
+}
+
+.post-body h5::before {
+  content: "### ";
+}
+
+.post-body h6::before {
+  content: "#### ";
+}
+
 footer {
   font-size: 0.8em;
   font-weight: 400;

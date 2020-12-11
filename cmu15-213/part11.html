@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <!-- Minima -->
+  <!-- Hexo theme created by @adisaktijrs -->
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+
+  
+  <title>CMU 15-213 Part11 Network Programming - yanmulin</title>
+  
+  <link rel="canonical" href="https://yanmulin.me/cmu15-213/part11.html">
+  
+  <meta name="description" content="">
+  
+  
+  <meta name="author" content="yanmulin">
+  <meta property="og:site_name" content="颜木林的流水账" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="CMU 15-213 Part11 Network Programming - yanmulin" />
+  
+  <meta property="og:description" content="">
+  
+  <meta property="og:url" content="https://yanmulin.me/cmu15-213/part11.html" />
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Preload fonts
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="preload" href="../fonts/dm-serif-display-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../fonts/inter-v2-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+<link rel="stylesheet" href="/css/normalize.css">
+
+  
+<link rel="stylesheet" href="/css/skeleton.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+<link rel="stylesheet" href="/css/prism-dark.css">
+
+  
+<link rel="stylesheet" href="/css/prism-line-numbers.css">
+
+  <!-- User css -->
+  
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+
+  <!-- Custom Theme Color Style
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <style>
+  a:not(.icon) {
+    text-decoration-color: #0FA0CE;
+    background-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 50%,
+      #0FA0CE 50%
+    );
+  }
+  .category-link {]
+    text-decoration-color: transparent;
+    border-color: #0FA0CE;
+  }
+  blockquote {
+    border-left: 8px solid #0FA0CE;
+  }
+  .nanobar .bar {
+    background: #0FA0CE;
+  }
+  .post-body h3::before {
+    color: #0FA0CE;
+  } 
+  .post-body h4::before {
+    color: #0FA0CE;
+  } 
+  .post-body h5::before {
+    color: #0FA0CE;
+  } 
+  .post-body h6::before {
+    color: #0FA0CE;
+  }
+  .button.button-primary:hover,
+  button.button-primary:hover,
+  input[type="submit"].button-primary:hover,
+  input[type="reset"].button-primary:hover,
+  input[type="button"].button-primary:hover,
+  .button.button-primary:focus,
+  button.button-primary:focus,
+  input[type="submit"].button-primary:focus,
+  input[type="reset"].button-primary:focus,
+  input[type="button"].button-primary:focus {
+    background-color: #0FA0CE;
+    border-color: #0FA0CE;
+  }
+  input[type="email"]:focus,
+  input[type="number"]:focus,
+  input[type="search"]:focus,
+  input[type="text"]:focus,
+  input[type="tel"]:focus,
+  input[type="url"]:focus,
+  input[type="password"]:focus,
+  textarea:focus,
+  select:focus {
+    border: 1px solid #0FA0CE;
+  }
+</style>
+
+  <!-- Google Analytics (With Privacy Settings On)
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body class="darkmode">
+  <div class="container">
+    <div class="row">
+      <div>
+        <div class="row">
+  
+  <div class="six columns">
+    <h1 class="mt-2">
+      颜木林的流水账
+    </h1>
+  </div>
+  
+
+  <div class="twelve columns">
+    <div class="row" style="margin-bottom: 2.6rem">
+        
+          <a href="/">Home</a>
+          
+            
+              <a href="/archives" class="ml">Notes</a>
+            
+          
+            
+              <a href="/About" class="ml">About</a>
+            
+          
+        
+      </div>
+  </div>
+
+  
+</div>
+
+        <div class="trans">
+            <h2>CMU 15-213 Part11 Network Programming</h2>
+
+  <p><img src="https://i.loli.net/2020/02/14/APws87bICyYKpVF.png" alt="网络编程接口"></p>
+<h3 id="获取域名的地址"><a href="#获取域名的地址" class="headerlink" title="获取域名的地址"></a>获取域名的地址</h3><pre class="line-numbers language-none"><code class="language-none">#include &quot;csapp.h&quot;
+
+int main(int argc, char **argv)
+&#123;
+    struct addrinfo *p, *listp, hints;
+    char buf[MAXLINE];
+    int rc, flags;
+
+    &#x2F;* Get a list of addrinfo records *&#x2F;
+    memset(&amp;hints, 0, sizeof(struct addrinfo));
+    hints.ai_family &#x3D; AF_INET;       &#x2F;* IPv4 only *&#x2F;
+    hints.ai_socktype &#x3D; SOCK_STREAM; &#x2F;* Connections only *&#x2F;
+    if ((rc &#x3D; getaddrinfo(argv[1], NULL, &amp;hints, &amp;listp)) !&#x3D; 0) &#123;
+        fprintf(stderr, &quot;getaddrinfo error: %s\n&quot;, gai_strerror(rc));
+        exit(1);
+    &#125;
+
+    &#x2F;* Walk the list and display each IP address *&#x2F;
+    flags &#x3D; NI_NUMERICHOST; &#x2F;* Display address instead of name *&#x2F;
+    for (p &#x3D; listp; p; p &#x3D; p-&gt;ai_next) &#123;
+        Getnameinfo(p-&gt;ai_addr, p-&gt;ai_addrlen, 
+                    buf, MAXLINE, NULL, 0, flags);
+        printf(&quot;%s\n&quot;, buf);
+    &#125;
+
+    &#x2F;* Clean up *&#x2F;
+    Freeaddrinfo(listp);
+
+    exit(0);
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="建立连接"><a href="#建立连接" class="headerlink" title="建立连接"></a>建立连接</h3><pre class="line-numbers language-none"><code class="language-none">int open_clientfd(char *hostname, char *port) &#123;
+    int clientfd;
+    struct addrinfo hints, *listp, *p;
+
+    &#x2F;* Get a list of potential server addresses *&#x2F;
+    memset(&amp;hints, 0, sizeof(struct addrinfo));
+    hints.ai_socktype &#x3D; SOCK_STREAM;  &#x2F;* Open a connection *&#x2F;
+    hints.ai_flags &#x3D; AI_NUMERICSERV;  &#x2F;* …using numeric port arg. *&#x2F;
+    hints.ai_flags |&#x3D; AI_ADDRCONFIG;  &#x2F;* Recommended for connections *&#x2F;
+    Getaddrinfo(hostname, port, &amp;hints, &amp;listp);
+
+    &#x2F;* Walk the list for one that we can successfully connect to *&#x2F;
+    for (p &#x3D; listp; p; p &#x3D; p-&gt;ai_next) &#123;
+        &#x2F;* Create a socket descriptor *&#x2F;
+        if ((clientfd &#x3D; socket(p-&gt;ai_family, p-&gt;ai_socktype, 
+                               p-&gt;ai_protocol)) &lt; 0)
+            continue; &#x2F;* Socket failed, try the next *&#x2F;
+
+        &#x2F;* Connect to the server *&#x2F;
+        if (connect(clientfd, p-&gt;ai_addr, p-&gt;ai_addrlen) !&#x3D; -1)
+            break; &#x2F;* Success *&#x2F;
+        Close(clientfd); &#x2F;* Connect failed, try another *&#x2F;
+    &#125;
+
+    &#x2F;* Clean up *&#x2F;
+    Freeaddrinfo(listp);
+    if (!p) &#x2F;* All connects failed *&#x2F;
+        return -1;
+    else    &#x2F;* The last connect succeeded *&#x2F;
+        return clientfd;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-none"><code class="language-none">int open_listenfd(char *port)
+&#123;
+    struct addrinfo hints, *listp, *p;
+    int listenfd, optval&#x3D;1;
+
+    &#x2F;* Get a list of potential server addresses *&#x2F;
+    memset(&amp;hints, 0, sizeof(struct addrinfo));
+    hints.ai_socktype &#x3D; SOCK_STREAM;             &#x2F;* Accept connect. *&#x2F;
+    hints.ai_flags &#x3D; AI_PASSIVE | AI_ADDRCONFIG; &#x2F;* …on any IP addr *&#x2F;
+    hints.ai_flags |&#x3D; AI_NUMERICSERV;            &#x2F;* …using port no. *&#x2F;
+    Getaddrinfo(NULL, port, &amp;hints, &amp;listp);
+    &#x2F;* Walk the list for one that we can bind to *&#x2F;
+    for (p &#x3D; listp; p; p &#x3D; p-&gt;ai_next) &#123;
+        &#x2F;* Create a socket descriptor *&#x2F;
+        if ((listenfd &#x3D; socket(p-&gt;ai_family, p-&gt;ai_socktype, 
+                               p-&gt;ai_protocol)) &lt; 0)
+            continue;  &#x2F;* Socket failed, try the next *&#x2F;
+
+        &#x2F;* Eliminates &quot;Address already in use&quot; error from bind *&#x2F;
+        Setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, 
+                   (const void *)&amp;optval , sizeof(int));
+
+        &#x2F;* Bind the descriptor to the address *&#x2F;
+        if (bind(listenfd, p-&gt;ai_addr, p-&gt;ai_addrlen) &#x3D;&#x3D; 0)
+            break; &#x2F;* Success *&#x2F;
+        Close(listenfd); &#x2F;* Bind failed, try the next *&#x2F;
+    &#125;
+
+    &#x2F;* Clean up *&#x2F;
+    Freeaddrinfo(listp);
+    if (!p) &#x2F;* No address worked *&#x2F;
+        return -1;
+
+    &#x2F;* Make it a listening socket ready to accept conn. requests *&#x2F;
+    if (listen(listenfd, LISTENQ) &lt; 0) &#123;
+        Close(listenfd);
+        return -1;
+    &#125;
+    return listenfd;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="示例：主线程echo服务器"><a href="#示例：主线程echo服务器" class="headerlink" title="示例：主线程echo服务器"></a>示例：主线程echo服务器</h3><pre class="line-numbers language-none"><code class="language-none">#include &quot;csapp.h”
+void echo(int connfd);
+
+int main(int argc, char **argv)
+&#123;
+    int listenfd, connfd;
+    socklen_t clientlen;
+    struct sockaddr_storage clientaddr; &#x2F;* Enough room for any addr *&#x2F;                                                                                                               
+    char client_hostname[MAXLINE], client_port[MAXLINE];
+
+    listenfd &#x3D; Open_listenfd(argv[1]);
+    while (1) &#123;
+        clientlen &#x3D; sizeof(struct sockaddr_storage); &#x2F;* Important! *&#x2F;
+        connfd &#x3D; Accept(listenfd, (SA *)&amp;clientaddr, &amp;clientlen);
+        Getnameinfo((SA *) &amp;clientaddr, clientlen, 
+                        client_hostname, MAXLINE, client_port, MAXLINE, 0);
+        printf(&quot;Connected to (%s, %s)\n&quot;, client_hostname, client_port);
+        echo(connfd);
+        Close(connfd);
+    &#125;
+    exit(0);
+&#125;
+
+void echo(int connfd)
+&#123;
+    size_t n;
+    char buf[MAXLINE];
+    rio_t rio;
+
+    Rio_readinitb(&amp;rio, connfd);
+    while((n &#x3D; Rio_readlineb(&amp;rio, buf, MAXLINE)) !&#x3D; 0) &#123; 
+        printf(&quot;server received %d bytes\n&quot;, (int)n);
+	Rio_writen(connfd, buf, n);
+    &#125;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="示例：多进程并发echo服务器"><a href="#示例：多进程并发echo服务器" class="headerlink" title="示例：多进程并发echo服务器"></a>示例：多进程并发echo服务器</h3><pre class="line-numbers language-none"><code class="language-none">int main(int argc, char **argv)
+&#123;
+    int listenfd, connfd;
+    socklen_t clientlen;
+    struct sockaddr_storage clientaddr;
+
+    Signal(SIGCHLD, sigchld_handler);
+    listenfd &#x3D; Open_listenfd(argv[1]);
+    while (1) &#123;
+        clientlen &#x3D; sizeof(struct sockaddr_storage);
+        connfd &#x3D; Accept(listenfd, (SA *) &amp;clientaddr, &amp;clientlen);
+        if (Fork() &#x3D;&#x3D; 0) &#123;
+            Close(listenfd); &#x2F;* Child closes its listening socket *&#x2F;
+            echo(connfd);    &#x2F;* Child services client *&#x2F;
+            Close(connfd);   &#x2F;* Child closes connection with client *&#x2F;
+            exit(0);         &#x2F;* Child exits *&#x2F;
+        &#125;
+        Close(connfd); &#x2F;* Parent closes connected socket (important!) *&#x2F;
+    &#125;
+&#125;
+
+void sigchld_handler(int sig)
+&#123; 
+    while (waitpid(-1, 0, WNOHANG) &gt; 0)
+        ;
+    return;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="多线程并发echo服务器"><a href="#多线程并发echo服务器" class="headerlink" title="多线程并发echo服务器"></a>多线程并发echo服务器</h3><pre class="line-numbers language-none"><code class="language-none">int main(int argc, char **argv)
+&#123;
+    int listenfd, *connfdp;
+    socklen_t clientlen;
+    struct sockaddr_storage clientaddr;
+    pthread_t tid;
+
+    listenfd &#x3D; Open_listenfd(argv[1]);
+    while (1) &#123;
+	clientlen&#x3D;sizeof(struct sockaddr_storage);
+	connfdp &#x3D; Malloc(sizeof(int)); 
+	*connfdp &#x3D; Accept(listenfd, 
+                 (SA *) &amp;clientaddr, &amp;clientlen); 
+	Pthread_create(&amp;tid, NULL, thread, connfdp);
+    &#125;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-none"><code class="language-none">&#x2F;* Thread routine *&#x2F;
+void *thread(void *vargp)
+&#123;
+    int connfd &#x3D; *((int *)vargp);
+    Pthread_detach(pthread_self()); 
+    Free(vargp);                    
+    echo(connfd);
+    Close(connfd);
+    return NULL;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+          
+<footer>
+  <span className='cc-licence'>CC BY-NC-SA 4.0</span> © 2020 🐣
+</footer>
+
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+  <script src="/js/nanobar.min.js"></script>
+  <script>
+    var options = {
+      classname: 'nanobar',
+      id: 'myNanobar'
+    };
+    var nanobar = new Nanobar(options);
+    nanobar.go(30);
+    nanobar.go(76);
+    nanobar.go(100);
+  </script>
+
+</body>
+
+</html>

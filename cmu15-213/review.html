@@ -11,21 +11,21 @@
   <meta charset="utf-8">
 
   
-  <title>CMU 15-213 Review</title>
+  <title>CMU 15-213 Review - yanmulin</title>
   
-  <link rel="canonical" href="https://yanmulin.me/2020/02/15/cmu15-213/review/">
+  <link rel="canonical" href="https://yanmulin.me/cmu15-213/review.html">
   
-  <meta name="description" content="去年年初在一家小公司实习时读完了《深入理解计算机系统》，读完只惊呼一本技术书籍竟然可以兼顾深度和广度地囊括计算机系统的方方面面，下至浮点数的二进制编码，汇编语言，上到网络编程，并发编程。但那时，我把每个章节作为相互独立的内容来看。今年瘟疫期间重新看完了这本书对应的课程视频，才以更全面的视角来理解这门">
+  <meta name="description" content="">
   
   
   <meta name="author" content="yanmulin">
   <meta property="og:site_name" content="颜木林的流水账" />
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="CMU 15-213 Review" />
+  <meta property="og:title" content="CMU 15-213 Review - yanmulin" />
   
-  <meta property="og:description" content="去年年初在一家小公司实习时读完了《深入理解计算机系统》，读完只惊呼一本技术书籍竟然可以兼顾深度和广度地囊括计算机系统的方方面面，下至浮点数的二进制编码，汇编语言，上到网络编程，并发编程。但那时，我把每个章节作为相互独立的内容来看。今年瘟疫期间重新看完了这本书对应的课程视频，才以更全面的视角来理解这门">
+  <meta property="og:description" content="">
   
-  <meta property="og:url" content="https://yanmulin.me/2020/02/15/cmu15-213/review/" />
+  <meta property="og:url" content="https://yanmulin.me/cmu15-213/review.html" />
 
   <!-- Mobile Specific Metas
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
@@ -84,6 +84,15 @@
   .post-body h3::before {
     color: #0FA0CE;
   } 
+  .post-body h4::before {
+    color: #0FA0CE;
+  } 
+  .post-body h5::before {
+    color: #0FA0CE;
+  } 
+  .post-body h6::before {
+    color: #0FA0CE;
+  }
   .button.button-primary:hover,
   button.button-primary:hover,
   input[type="submit"].button-primary:hover,
@@ -122,33 +131,36 @@
       <div>
         <div class="row">
   
+  <div class="six columns">
+    <h1 class="mt-2">
+      颜木林的流水账
+    </h1>
+  </div>
+  
 
   <div class="twelve columns">
     <div class="row" style="margin-bottom: 2.6rem">
         
+          <a href="/">Home</a>
           
             
-              <a href="/archives" class="mr u-pull-right">Notes</a>
+              <a href="/archives" class="ml">Notes</a>
             
           
             
-              <a href="/About" class="mr u-pull-right">About</a>
+              <a href="/About" class="ml">About</a>
             
           
-          <a href="/" class="u-pull-right mr">Home</a>
         
       </div>
   </div>
 
   
-    <h2>CMU 15-213 Review</h2>
-    <p class="post-info">Feb 15, 2020 <a class="category-link" href="/categories/CMU-15-213/">CMU 15-213</a></p>
-  
 </div>
 
         <div class="trans">
-          <div class="post-body">
-  
+            <h2>CMU 15-213 Review</h2>
+
   <p>去年年初在一家小公司实习时读完了《深入理解计算机系统》，读完只惊呼一本技术书籍竟然可以兼顾深度和广度地囊括计算机系统的方方面面，下至浮点数的二进制编码，汇编语言，上到网络编程，并发编程。但那时，我把每个章节作为相互独立的内容来看。今年瘟疫期间重新看完了这本书对应的课程视频，才以更全面的视角来理解这门课程。</p>
 <p>这门课程是为CMU计算机专业的低年级本科生开设，作为计算机系统方向的导论课。从书名出发可以理解这门课程开设的用意。可惜中文版的翻译《深入理解计算机系统》并不算准确。原书名是<em>Computer System: from A Programmer Perspective</em>，字面翻译作《计算机系统：从程序员的视角》。而“程序员视角”恰好是这本书的精华所在。</p>
 <p>在计算机封装的世界里，复杂的东西被包装得漂亮又方便。但抽象偶尔失灵的时候，我们仍然需要打开封装的盒子，钻进复杂性中一探究竟。可是每一层抽象中无穷无尽的细节容易使我们疲于奔命。如何站在高处从“程序员的视角”，简单扼要的了解计算机系统各个层面的运作方式，以及这些原理如何帮助我们写代码，正是这门课程的价值所在。举一个例子，这门课程没有向其他汇编课程一样教授如何用汇编语言写冒泡排序，而是从编译器的角度讲了gcc会产生怎样的汇编代码，所以我们可以如何优化程序。另一个例子是利用计算机存储器体系来优化程序性能。这些底层的知识最终都落脚到我们应该写怎样的代码，这就是用“程序员视角”看待系统。</p>
@@ -177,10 +189,6 @@
 <p>三种服务器模型，多进程，事件驱动和多线程。</p>
 <p>并发编程介绍了并发经典问题，竞争和死锁。可以利用信号量和线程安全函数解决。并发模型：生产者-消费者，读写模型。注意多核上的多线程的性能不一定好过单核单线程的性能，代码的写法起到很大影响，因为多线程存在线程调度和同步等额外开销。</p>
 
-  
-  
-
-</div>
 
           
 <footer>

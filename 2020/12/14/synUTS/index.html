@@ -218,7 +218,7 @@ r<span class="token operator">-></span>lock <span class="token operator">=</span
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>一定需要两个<code>waitlock</code>，第一个用于保护<code>want</code>必须在测试前被置一，第二个确保不存在唤醒竞争。一个有点难的问题：如果不存在第二个<code>waitlock</code>，竞争如何触发？假设进程A刚刚被唤醒，而进程B正在释放资源。由于进程A还没尝试获得自旋锁，进程B在第一个<code>waitlock</code>没有遇到障碍并通过了<code>r-&gt;want</code>的测试（其他进程设置了<code>r-&gt;want</code>）。接着进程A从<code>sleepl</code>返回，测试<code>r-&gt;lock</code>，可资源已经被其他进程抢走，于是进程A重新进入睡眠。在这个情况下，如果没有第二个<code>waitlock</code>，唤醒竞争仍然存在。</p>
-<h3 id="条件获取Sleep-Lock"><a href="#条件获取Sleep-Lock" class="headerlink" title="条件获取Sleep Lock"></a>条件获取Sleep Lock</h3><p>Unix内核中有这样的情况：尽管进程抢到了锁，它也不一定获取这个锁。比如文件系统的空闲块，以链表的形式存储在内存中。进程只在链表满的时候才真正占用链表对应的锁。这个例子中，自旋锁还保护链表的操作。</p>
+<h3 id="条件获取Sleep-Lock"><a href="#条件获取Sleep-Lock" class="headerlink" title="条件获取Sleep Lock"></a>条件获取Sleep Lock</h3><p>Unix内核中有这样的情况：尽管进程抢到了锁，它也不一定获取这个锁。比如文件系统的空闲块，以链表的形式存储在内存中。进程只在链表满的时候才真正获取保护链表的锁。这个例子中，自旋锁还保护链表的操作。</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token function">spinlock</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>fp<span class="token operator">-></span>lk<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token keyword">while</span> <span class="token punctuation">(</span>fp<span class="token operator">-></span>lock<span class="token punctuation">)</span>
   <span class="token function">sleepl</span><span class="token punctuation">(</span>fp<span class="token punctuation">,</span> <span class="token operator">&amp;</span>fp<span class="token operator">-></span>lk<span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -270,7 +270,7 @@ qp<span class="token operator">-></span>lock <span class="token operator">=</spa
 <span class="token keyword">goto</span> loop<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>首先，Receiver要确保在释放<code>qp-&gt;lock</code>前获取自旋锁，否则<code>sleepl(&amp;qp-&gt;qnum, &amp;msg_lk)</code>对应的唤醒可能丢失。其次，<code>wakeup(qp-&gt;qnum)</code>前面不需要等待自旋锁，因为此时Sender已经拥有<code>qp-&gt;lock</code>，Receiver要么正在等待<code>qp-&gt;qnum</code>，要么正在等待<code>qp-&gt;lock</code>，不可能产生唤醒竞争。</p>
-<h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><p>通过几个唤醒竞争的例子，可以一窥并发编程与竞争分析的难点。正如信息安全学，原语并不能保证系统的安全性。程序的线程安全隐患，往往存在非常隐蔽且微妙的地方。</p>
+<h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><p>通过几个唤醒竞争的例子，可以一窥并发编程与竞争分析的难点。正如信息安全学，原语并不能保证系统的安全性。程序的线程安全隐患，往往在于非常隐蔽且微妙的地方。</p>
 
   
   

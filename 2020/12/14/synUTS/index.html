@@ -15,7 +15,7 @@
   
   <link rel="canonical" href="https://yanmulin.me/2020/12/14/synUTS/">
   
-  <meta name="description" content="这篇论文介绍了Unix内核如何为多核处理器设计的设计基于事件的sleep lock，并利用自旋锁解决唤醒时的竞争问题。这篇论文分析了内核中许多潜在竞争问题，结合Spin分析，十分值得琢磨且有趣。 Sleep Lock 与唤醒竞争锁的获取与释放在Unix内核中被事件处理：获取锁时，进程检查资源占用情况">
+  <meta name="description" content="这篇论文介绍了Unix内核如何为多核处理器设计的设计基于事件的sleep lock，并利用自旋锁解决唤醒时的竞争问题。这篇论文分析了内核中许多潜在竞争问题，结合Model Checking和Spin，十分值得琢磨且有趣。 Sleep Lock 与唤醒竞争锁的获取与释放在Unix内核中被当作事件处理：">
   
   
   <meta name="author" content="yanmulin">
@@ -23,7 +23,7 @@
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Unix迷失的唤醒" />
   
-  <meta property="og:description" content="这篇论文介绍了Unix内核如何为多核处理器设计的设计基于事件的sleep lock，并利用自旋锁解决唤醒时的竞争问题。这篇论文分析了内核中许多潜在竞争问题，结合Spin分析，十分值得琢磨且有趣。 Sleep Lock 与唤醒竞争锁的获取与释放在Unix内核中被事件处理：获取锁时，进程检查资源占用情况">
+  <meta property="og:description" content="这篇论文介绍了Unix内核如何为多核处理器设计的设计基于事件的sleep lock，并利用自旋锁解决唤醒时的竞争问题。这篇论文分析了内核中许多潜在竞争问题，结合Model Checking和Spin，十分值得琢磨且有趣。 Sleep Lock 与唤醒竞争锁的获取与释放在Unix内核中被当作事件处理：">
   
   <meta property="og:url" content="https://yanmulin.me/2020/12/14/synUTS/" />
 
@@ -158,8 +158,8 @@
         <div class="trans">
           <div class="post-body">
   
-  <p><a target="_blank" rel="noopener" href="https://www.usenix.org/legacy/publications/compsystems/1990/sum_ruane.pdf">这篇论文</a>介绍了Unix内核如何为多核处理器设计的设计基于事件的sleep lock，并利用自旋锁解决唤醒时的竞争问题。这篇论文分析了内核中许多潜在竞争问题，结合Spin分析，十分值得琢磨且有趣。</p>
-<h3 id="Sleep-Lock-与唤醒竞争"><a href="#Sleep-Lock-与唤醒竞争" class="headerlink" title="Sleep Lock 与唤醒竞争"></a>Sleep Lock 与唤醒竞争</h3><p>锁的获取与释放在Unix内核中被事件处理：获取锁时，进程检查资源占用情况，如果已被占用，则把进程放入等待队列，接着睡眠等待；释放锁时，把所有等待队列中的进程唤醒，令他们争夺资源，只有一个进程可以争夺到资源，于是其他进程继续睡眠等待。</p>
+  <p><a target="_blank" rel="noopener" href="https://www.usenix.org/legacy/publications/compsystems/1990/sum_ruane.pdf">这篇论文</a>介绍了Unix内核如何为多核处理器设计的设计基于事件的sleep lock，并利用自旋锁解决唤醒时的竞争问题。这篇论文分析了内核中许多潜在竞争问题，结合Model Checking和Spin，十分值得琢磨且有趣。</p>
+<h3 id="Sleep-Lock-与唤醒竞争"><a href="#Sleep-Lock-与唤醒竞争" class="headerlink" title="Sleep Lock 与唤醒竞争"></a>Sleep Lock 与唤醒竞争</h3><p>锁的获取与释放在Unix内核中被当作事件处理：获取锁时，进程检查资源占用情况，如果已被占用，则把进程放入等待队列，接着睡眠等待；释放锁时，把所有等待队列中的进程唤醒，令他们争夺资源，只有一个进程可以争夺到资源，于是其他进程继续睡眠等待。</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token comment">// Process A</span>
 <span class="token keyword">while</span> <span class="token punctuation">(</span>r<span class="token operator">-></span>lock<span class="token punctuation">)</span>
   <span class="token function">sleep</span><span class="token punctuation">(</span>r<span class="token punctuation">)</span><span class="token punctuation">;</span>

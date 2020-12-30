@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <!-- Minima -->
+  <!-- Hexo theme created by @adisaktijrs -->
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+
+  
+  <title>负载均衡小结</title>
+  
+  <link rel="canonical" href="https://yanmulin.me/2020/12/29/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E5%B0%8F%E7%BB%93/">
+  
+  <meta name="description" content="本文是对这篇介绍负载均衡(Load Balancing)的博客的笔记。 负载均衡指在分布的计算资源中尽可能合理地分配任务/请求，比如操作系统调度处理器，Kubernetes管理集群，以及代理分发网络请求，都使用到负载均衡的技术。但本文只讨论网络请求的负载均衡。为简单起见，我们把负载均衡器叫做代理(p">
+  
+  
+  <meta name="author" content="yanmulin">
+  <meta property="og:site_name" content="颜木林的流水账" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="负载均衡小结" />
+  
+  <meta property="og:description" content="本文是对这篇介绍负载均衡(Load Balancing)的博客的笔记。 负载均衡指在分布的计算资源中尽可能合理地分配任务/请求，比如操作系统调度处理器，Kubernetes管理集群，以及代理分发网络请求，都使用到负载均衡的技术。但本文只讨论网络请求的负载均衡。为简单起见，我们把负载均衡器叫做代理(p">
+  
+  <meta property="og:url" content="https://yanmulin.me/2020/12/29/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E5%B0%8F%E7%BB%93/" />
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Preload fonts
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="preload" href="../fonts/dm-serif-display-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../fonts/inter-v2-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+<link rel="stylesheet" href="/css/normalize.css">
+
+  
+<link rel="stylesheet" href="/css/skeleton.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+<link rel="stylesheet" href="/css/prism-dark.css">
+
+  
+<link rel="stylesheet" href="/css/prism-line-numbers.css">
+
+  <!-- User css -->
+  
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+
+  <!-- Custom Theme Color Style
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <style>
+  a:not(.icon) {
+    text-decoration-color: #0FA0CE;
+    background-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 50%,
+      #0FA0CE 50%
+    );
+  }
+  .category-link {]
+    text-decoration-color: transparent;
+    border-color: #0FA0CE;
+  }
+  blockquote {
+    border-left: 8px solid #0FA0CE;
+  }
+  .nanobar .bar {
+    background: #0FA0CE;
+  }
+  .post-body h3::before {
+    color: #0FA0CE;
+  } 
+  .post-body h4::before {
+    color: #0FA0CE;
+  } 
+  .post-body h5::before {
+    color: #0FA0CE;
+  } 
+  .post-body h6::before {
+    color: #0FA0CE;
+  }
+  .button.button-primary:hover,
+  button.button-primary:hover,
+  input[type="submit"].button-primary:hover,
+  input[type="reset"].button-primary:hover,
+  input[type="button"].button-primary:hover,
+  .button.button-primary:focus,
+  button.button-primary:focus,
+  input[type="submit"].button-primary:focus,
+  input[type="reset"].button-primary:focus,
+  input[type="button"].button-primary:focus {
+    background-color: #0FA0CE;
+    border-color: #0FA0CE;
+  }
+  input[type="email"]:focus,
+  input[type="number"]:focus,
+  input[type="search"]:focus,
+  input[type="text"]:focus,
+  input[type="tel"]:focus,
+  input[type="url"]:focus,
+  input[type="password"]:focus,
+  textarea:focus,
+  select:focus {
+    border: 1px solid #0FA0CE;
+  }
+</style>
+
+  <!-- Google Analytics (With Privacy Settings On)
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body class="darkmode">
+  <div class="container">
+    <div class="row">
+      <div>
+        <div class="row">
+  
+
+  <div class="twelve columns">
+    <div class="row" style="margin-bottom: 2.6rem">
+        
+          
+            
+              <a href="/archives" class="mr u-pull-right">Notes</a>
+            
+          
+            
+              <a href="/About" class="mr u-pull-right">About</a>
+            
+          
+          <a href="/" class="u-pull-right mr">Home</a>
+        
+      </div>
+  </div>
+
+  
+    <h2>负载均衡小结</h2>
+    <p class="post-info">Dec 29, 2020 <a class="category-link" href="/categories/unclassified/">unclassified</a></p>
+  
+</div>
+
+        <div class="trans">
+          <div class="post-body">
+  
+  <p>本文是对这篇介绍负载均衡(Load Balancing)的<a target="_blank" rel="noopener" href="https://blog.envoyproxy.io/introduction-to-modern-network-load-balancing-and-proxying-a57f6ff80236">博客</a>的笔记。</p>
+<p>负载均衡指在分布的计算资源中尽可能合理地分配任务/请求，比如操作系统调度处理器，Kubernetes管理集群，以及代理分发网络请求，都使用到负载均衡的技术。但本文只讨论网络请求的负载均衡。为简单起见，我们把负载均衡器叫做代理(proxy)。</p>
+<h3 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h3><p>可以根据网络OSI模型将代理分为L4和L7两种类型。L4代理按照第四层传输层数据（TCP、UDP）分发请求；L7代理根据应用层的内容（HTTP，Redis，MongoDB等）分发网络请求。</p>
+<p>L4代理能够确保来自同一条连接的所有数据包，会被转发到同一台后端服务器。当网络请求到达时，L4代理选择一台可用的后端服务器并转发。一种转发方式是L4代理终止来自客户端的连接，使用新连接把请求转发到后端服务器。另一种方式类似NAT，L4代理对数据包的报头进行地址替换，使得数据包直达后端服务器。如果在第二种方式的基础进一步通用路由封装（Generic Routing Encapsulation, GRE），则可以实现直接服务器返回（Direct Server Retur），减轻代理的压力。</p>
+<p>与L7代理比较，L4代理的缺点在于基于连接分发请求，可能存在负载不平衡的问题。比如A和B客户端分别建立一条TCP长连接来发送HTTP2请求，分别被代理转发到两个后端服务器。其中A以每秒1个数据包的速度发送请求，B的速度是每秒1000个数据包，导致两台后端服务器承受不同压力，而L4代理无法分析应用层的数据来改善负载分布。但由于结构简单，L4代理的吞吐量更高，可以用于防御DDos（比如SYN Flood）。</p>
+<h3 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h3><p>代理除了均衡负载，还可以用于服务发现（Service Discovery)，健康检查（Health Checking），容错（Fault Tolerance）和命名抽象（Naming Abstraction）。</p>
+<p>代理维护一个可用后端服务器的列表，这个过程称为服务发现。常用的实现方法有：静态文件配置，DNS，Zoopkeeper等。代理通过健康检查确定后端服务器是否可用。健康检查有主动和被动两种类型：主动的代理向后端服务器发送周期性心跳信号；被动的代理通过数据流判断后端服务器的健康状况，比如L4代理通过TCP连接状态，L7代理通过HTTP状态码（503服务不可用）。基于健康检查，代理可以进一步实现容错机制，重启宕机的服务。命名抽象指代理为客户端提供统一的入口，客户端不需要知道后端服务器的具体地址与端口。</p>
+<p>除此之外，代理还常常提供粘性会话（Sticky Session），TLS终止（TLS Termination），和可观察性（Observability）等特点。</p>
+<h3 id="常见拓扑结构"><a href="#常见拓扑结构" class="headerlink" title="常见拓扑结构"></a>常见拓扑结构</h3><p>负载均衡有中间代理（Middle Proxy），边缘代理（Edge Proxy），作为客户端依赖库（Embedded Client Library），和内部通讯（Sidecar Proxy）等4种常见拓扑结构。</p>
+<ul>
+<li><p>中间代理：这是最简单的代理拓扑结构。只需要配置DNS，就可以令客户端连接到中间代理。这种拓扑的缺点是代理是单点错误。</p>
+</li>
+<li><p>边缘代理：相比较中间代理，额外起网关的作用。其余功能与中间代理完全相同，所以也存在单点错误的缺点。</p>
+</li>
+<li><p>作为客户端依赖库：解决了单点错误的问题。但如果客户端用多种语言开发，那么必须为每一种语言都提供相应的负载均衡库。</p>
+</li>
+<li><p>内部通讯：在客户端运行单独的进程用作负载均衡。目前最推荐采用的拓扑结构。</p>
+</li>
+</ul>
+<h3 id="尾声"><a href="#尾声" class="headerlink" title="尾声"></a>尾声</h3><p>博客后文还提到负载均衡的其他方面，比如L4代理利用BGP协议实现容错等。关于L7代理，作者提到全局的负载均衡器和中心化的控制面板的体系，用于调控运行在客户端的代理分发策略，是未来创新和趋势的所在。</p>
+
+  
+  
+
+</div>
+
+          
+<footer>
+  <span className='cc-licence'>CC BY-NC-SA 4.0</span> © 2020 🐣
+</footer>
+
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+  <script src="/js/nanobar.min.js"></script>
+  <script>
+    var options = {
+      classname: 'nanobar',
+      id: 'myNanobar'
+    };
+    var nanobar = new Nanobar(options);
+    nanobar.go(30);
+    nanobar.go(76);
+    nanobar.go(100);
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <!-- Minima -->
+  <!-- Hexo theme created by @adisaktijrs -->
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+
+  
+  <title>VMWare虚拟机的容错设计</title>
+  
+  <link rel="canonical" href="https://yanmulin.me/2021/01/31/mit6_824/vm-ft/">
+  
+  <meta name="description" content="这篇论文描述了一个机器级的容错架构，以很小的网络带宽消耗实现了一个可容错的商用虚拟机。 这个架构的设计思路是把机器抽象为一台状态机，如果primary和backup接受完全相同的输入和事件，那么两者最终会抵达相同的状态。所以只要将primary的所有输入和非确定性事件(non-determinist">
+  
+  
+  <meta name="author" content="yanmulin">
+  <meta property="og:site_name" content="颜木林的流水账" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="VMWare虚拟机的容错设计" />
+  
+  <meta property="og:description" content="这篇论文描述了一个机器级的容错架构，以很小的网络带宽消耗实现了一个可容错的商用虚拟机。 这个架构的设计思路是把机器抽象为一台状态机，如果primary和backup接受完全相同的输入和事件，那么两者最终会抵达相同的状态。所以只要将primary的所有输入和非确定性事件(non-determinist">
+  
+  <meta property="og:url" content="https://yanmulin.me/2021/01/31/mit6_824/vm-ft/" />
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Preload fonts
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="preload" href="../fonts/dm-serif-display-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../fonts/inter-v2-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+<link rel="stylesheet" href="/css/normalize.css">
+
+  
+<link rel="stylesheet" href="/css/skeleton.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+<link rel="stylesheet" href="/css/prism-dark.css">
+
+  
+<link rel="stylesheet" href="/css/prism-line-numbers.css">
+
+  <!-- User css -->
+  
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+
+  <!-- Custom Theme Color Style
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <style>
+  a:not(.icon) {
+    text-decoration-color: #0FA0CE;
+    background-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 50%,
+      #0FA0CE 50%
+    );
+  }
+  .category-link {]
+    text-decoration-color: transparent;
+    border-color: #0FA0CE;
+  }
+  blockquote {
+    border-left: 8px solid #0FA0CE;
+  }
+  .nanobar .bar {
+    background: #0FA0CE;
+  }
+  .post-body h3::before {
+    color: #0FA0CE;
+  } 
+  .post-body h4::before {
+    color: #0FA0CE;
+  } 
+  .post-body h5::before {
+    color: #0FA0CE;
+  } 
+  .post-body h6::before {
+    color: #0FA0CE;
+  }
+  .button.button-primary:hover,
+  button.button-primary:hover,
+  input[type="submit"].button-primary:hover,
+  input[type="reset"].button-primary:hover,
+  input[type="button"].button-primary:hover,
+  .button.button-primary:focus,
+  button.button-primary:focus,
+  input[type="submit"].button-primary:focus,
+  input[type="reset"].button-primary:focus,
+  input[type="button"].button-primary:focus {
+    background-color: #0FA0CE;
+    border-color: #0FA0CE;
+  }
+  input[type="email"]:focus,
+  input[type="number"]:focus,
+  input[type="search"]:focus,
+  input[type="text"]:focus,
+  input[type="tel"]:focus,
+  input[type="url"]:focus,
+  input[type="password"]:focus,
+  textarea:focus,
+  select:focus {
+    border: 1px solid #0FA0CE;
+  }
+</style>
+
+  <!-- Google Analytics (With Privacy Settings On)
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body class="darkmode">
+  <div class="container">
+    <div class="row">
+      <div>
+        <div class="row">
+  
+
+  <div class="twelve columns">
+    <div class="row" style="margin-bottom: 2.6rem">
+        
+          
+            
+              <a href="/archives" class="mr u-pull-right">Notes</a>
+            
+          
+            
+              <a href="/About" class="mr u-pull-right">About</a>
+            
+          
+          <a href="/" class="u-pull-right mr">Home</a>
+        
+      </div>
+  </div>
+
+  
+    <h2>VMWare虚拟机的容错设计</h2>
+    <p class="post-info">Jan 31, 2021 <a class="category-link" href="/categories/MIT-8-624-Papers/">MIT 8.624 Papers</a></p>
+  
+</div>
+
+        <div class="trans">
+          <div class="post-body">
+  
+  <p>这篇论文描述了一个机器级的容错架构，以很小的网络带宽消耗实现了一个可容错的商用虚拟机。</p>
+<p>这个架构的设计思路是把机器抽象为一台状态机，如果primary和backup接受完全相同的输入和事件，那么两者最终会抵达相同的状态。所以只要将primary的所有输入和非确定性事件(non-deterministic operations/events)原封不动的通过logging channel发送给backup，那么在primary宕机时，backup也能恢复到与primary相同的状态。backup通过log entries恢复状态的过程叫做**非确定性重放(non-deterministic replay)**。</p>
+<h3 id="非确定性重放"><a href="#非确定性重放" class="headerlink" title="非确定性重放"></a>非确定性重放</h3><p>非确定性重放要求primary把所有输入和非确定性事件发送给backup。输入包括但不限于收到的网络包，磁盘读取，键鼠等设备输入等；非确定性事件包括虚拟的中断，产生随机数，和读取CPU时钟等。多亏虚拟机，输入和非确定性事件才可以被捕获与记录。重放的过程如下：</p>
+<ol>
+<li>捕获到输入或非确定性事件时，primary通过logging channel发送给backup；</li>
+<li>backup收到并将消息入队(并持久化）后，才给primary发送ack回复；</li>
+<li>primary收到来自backup的ack回复后，才回复client；</li>
+<li>backup不定时地消耗队列中的消息。</li>
+</ol>
+<p>消息内容需要包括事件发生时primary的指令序号，因为backup也需要在相同的指令位置触发事件。队列为空时，backup会停止执行等待primary发来新的消息；队列满时，primary停止执行等待backup消耗消息。</p>
+<p>Primary在收到backup的ack才回复client是为了满足**输出法则(Output Rule)**。如果primary在收到ack前回复client，且primary在回复client后宕机，那么不能确保backup收到这条消息，也就不能恢复到primary宕机前的状态。在目前设计下，如果primary在收到backup的ack后回复client，接着发生宕机，那么backup提升为primary后不能确定以前的primary有无给client发送回复。为了保险起见，backup都会给client重新发送一次回复。所以系统只能保证请求被处理“至少一次”，而且需要引入去重(deduplication)的机制。</p>
+<h3 id="错误检测与恢复"><a href="#错误检测与恢复" class="headerlink" title="错误检测与恢复"></a>错误检测与恢复</h3><p>论文采用了简单的Fail-stop的错误模型。如果没有在限定时间内收到回复，尽管真正的原因可能是网络延时，也假设目标宕机。</p>
+<p>VMWare的错误检测结合了UDP心跳与logging channel监听的两种方式。因为虚拟机定期会产生时钟中断，运行正常的虚拟机会周期性的通过logging channel发送消息。如果primary宕机，backup通过重放队列中的日志，恢复到primary宕机前的状态。</p>
+<p>如果发生裂脑错误(split-brain)，VMWare在CAP中优先保证一致性，在这个情况下primary和backup只有一个能够存活。为了确定哪一个能够存活，需要引入一个原子的test-and-set服务器。如果检测到裂脑，primary和backup会向test-and-set服务器请求操作，得到回复为0的一方可以存活并提升为primary，另外一方则自动停机。</p>
+<h3 id="局限"><a href="#局限" class="headerlink" title="局限"></a>局限</h3><p>该论文假设primary和backup共享同一个磁盘，这个假设消除了持久化层面一致性的影响。另外，截止于论文发表的时间，这个架构的虚拟机只支持模拟x86单核处理器。因为多核的并行执行引入了更复杂的非确定性。</p>
+
+  
+  
+
+</div>
+
+          
+<footer>
+  <span className='cc-licence'>CC BY-NC-SA 4.0</span> © 2020 🐣
+</footer>
+
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+  <script src="/js/nanobar.min.js"></script>
+  <script>
+    var options = {
+      classname: 'nanobar',
+      id: 'myNanobar'
+    };
+    var nanobar = new Nanobar(options);
+    nanobar.go(30);
+    nanobar.go(76);
+    nanobar.go(100);
+  </script>
+
+</body>
+
+</html>

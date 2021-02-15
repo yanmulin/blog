@@ -15,7 +15,7 @@
   
   <link rel="canonical" href="https://yanmulin.me/2020/11/27/mit6_824/GFS/">
   
-  <meta name="description" content="GFS是谷歌的三驾马车之一，也是分布式系统学习过程躲避不开的经典案例。经典论文常读常新，本文不追求面面俱到，只总结对我有启发的要点。 架构一个GFS集群包含一个Master节点和若干chunkserver节点，节点进程在Linux用户态运行。Master节点维护文件系统的元数据，而文件数据以chun">
+  <meta name="description" content="GFS是谷歌早期架构的三剑客之一，也是分布式系统学习过程躲避不开的经典案例。经典论文常读常新，本文不追求面面俱到，只总结对我有启发的要点。 架构一个GFS集群包含一个Master节点和若干chunkserver节点，节点进程在Linux用户态运行。Master节点维护文件系统的元数据，而文件数据以c">
   
   
   <meta name="author" content="yanmulin">
@@ -23,7 +23,7 @@
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Google File System" />
   
-  <meta property="og:description" content="GFS是谷歌的三驾马车之一，也是分布式系统学习过程躲避不开的经典案例。经典论文常读常新，本文不追求面面俱到，只总结对我有启发的要点。 架构一个GFS集群包含一个Master节点和若干chunkserver节点，节点进程在Linux用户态运行。Master节点维护文件系统的元数据，而文件数据以chun">
+  <meta property="og:description" content="GFS是谷歌早期架构的三剑客之一，也是分布式系统学习过程躲避不开的经典案例。经典论文常读常新，本文不追求面面俱到，只总结对我有启发的要点。 架构一个GFS集群包含一个Master节点和若干chunkserver节点，节点进程在Linux用户态运行。Master节点维护文件系统的元数据，而文件数据以c">
   
   <meta property="og:url" content="https://yanmulin.me/2020/11/27/mit6_824/GFS/" />
 
@@ -151,14 +151,14 @@
 
   
     <h2>Google File System</h2>
-    <p class="post-info">Nov 27, 2020 <a class="category-link" href="/categories/MIT-8-624-Papers/">MIT 8.624 Papers</a></p>
+    <p class="post-info">Nov 27, 2020 <a class="category-link" href="/categories/MIT-8-624-Papers/">MIT 8.624 Papers</a>, <a class="category-link" href="/categories/MIT-8-624-Papers/Google-%E4%B8%89%E5%89%91%E5%AE%A2/">Google 三剑客</a></p>
   
 </div>
 
         <div class="trans">
           <div class="post-body">
   
-  <p>GFS是谷歌的三驾马车之一，也是分布式系统学习过程躲避不开的经典案例。经典论文常读常新，本文不追求面面俱到，只总结对我有启发的要点。</p>
+  <p>GFS是谷歌早期架构的三剑客之一，也是分布式系统学习过程躲避不开的经典案例。经典论文常读常新，本文不追求面面俱到，只总结对我有启发的要点。</p>
 <h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><p>一个GFS集群包含一个Master节点和若干chunkserver节点，节点进程在Linux用户态运行。Master节点维护文件系统的元数据，而文件数据以chunk为基本单位存储在chunkserver节点中。chunk由全局唯一的句柄（handle）识别，Master管理文件名到chunk句柄的映射，以及chunk句柄到chunkserver地址的映射。</p>
 <p>Master中某些元数据存储在内存和硬盘中，比如文件名到chunk句柄的映射。Master采用logging和checkpoint的持久化策略，因为logging是顺序写入磁盘，相比数据库（B-tree）随机写入的速度提高不少。但有些元数据只存在内存中，比如chunk句柄到chunkserver的映射。由于内存的易失性，Master启动时需要主动向chunkserver请求所有chunk信息，往后周期性的心跳也被利用来更新chunk句柄到chunkserver的映射。</p>
 <h3 id="读操作"><a href="#读操作" class="headerlink" title="读操作"></a>读操作</h3><p>读操作非常简单：</p>
